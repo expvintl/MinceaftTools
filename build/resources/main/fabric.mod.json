@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mctools",
+  "version": "1.0",
+  "name": "MCTools",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/undefined/MCTools"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/mctools/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.expvintl.mctools.MCToolsClient"
+    ]
+  },
+  "mixins": [
+    "mctools.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.22",
+    "fabric": "*",
+    "minecraft": "1.20.1"
+  }
+}

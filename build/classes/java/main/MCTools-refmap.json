@@ -1,0 +1,38 @@
+{
+  "mappings": {
+    "com/expvintl/mctools/mixin/MinecraftClientMixin": {
+      "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V"
+    },
+    "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
+      "value": "field_37868:Ljava/lang/Object;"
+    },
+    "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
+      "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
+    },
+    "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
+      "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+    },
+    "com/expvintl/mctools/mixin/player/PlayerEntityMixin": {
+      "clipAtLedge": "Lnet/minecraft/class_1657;method_21825()Z"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/expvintl/mctools/mixin/MinecraftClientMixin": {
+        "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V"
+      },
+      "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
+        "value": "field_37868:Ljava/lang/Object;"
+      },
+      "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
+        "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
+      },
+      "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
+        "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+      },
+      "com/expvintl/mctools/mixin/player/PlayerEntityMixin": {
+        "clipAtLedge": "Lnet/minecraft/class_1657;method_21825()Z"
+      }
+    }
+  }
+}
