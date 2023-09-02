@@ -10,7 +10,8 @@
       "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
     },
     "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
-      "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+      "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z",
+      "breakBlock": "Lnet/minecraft/class_636;method_2899(Lnet/minecraft/class_2338;)Z"
     },
     "com/expvintl/mctools/mixin/player/PlayerEntityMixin": {
       "clipAtLedge": "Lnet/minecraft/class_1657;method_21825()Z"
@@ -28,7 +29,8 @@
         "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
       },
       "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
-        "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+        "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z",
+        "breakBlock": "Lnet/minecraft/class_636;method_2899(Lnet/minecraft/class_2338;)Z"
       },
       "com/expvintl/mctools/mixin/player/PlayerEntityMixin": {
         "clipAtLedge": "Lnet/minecraft/class_1657;method_21825()Z"

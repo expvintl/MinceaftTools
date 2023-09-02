@@ -1,6 +1,8 @@
 package com.expvintl.mctools.mixin;
 
 import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.events.MCEventBus;
+import com.expvintl.mctools.events.client.OpenScreenEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,13 +16,6 @@ public class MinecraftClientMixin {
     @Inject(method = "setScreen",at=@At("HEAD"))
     //挂钩设置界面函数
     private void onSetScreen(Screen screen, CallbackInfo info){
-        if(FeaturesBool.autoRespawn) {
-            //自动重生
-            if (screen instanceof DeathScreen) {
-                if (MinecraftClient.getInstance().player != null) {
-                    MinecraftClient.getInstance().player.requestRespawn();
-                }
-            }
-        }
+        MCEventBus.INSTANCE.post(OpenScreenEvent.get(screen));
     }
 }

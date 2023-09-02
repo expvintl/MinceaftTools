@@ -1,9 +1,6 @@
 package com.expvintl.mctools;
 
-import com.expvintl.mctools.commands.CAutoRespawnCommand;
-import com.expvintl.mctools.commands.CFullbirghtCommand;
-import com.expvintl.mctools.commands.CQServerPluginsCommand;
-import com.expvintl.mctools.commands.CSafeWalkCommand;
+import com.expvintl.mctools.commands.*;
 import com.expvintl.mctools.utils.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
@@ -73,6 +70,7 @@ public class MCToolsClient implements ClientModInitializer {
         CFullbirghtCommand.register(dispatcher);
         CAutoRespawnCommand.register(dispatcher);
         CSafeWalkCommand.register(dispatcher);
+        CAutoToolCommand.register(dispatcher);
         CQServerPluginsCommand.register(dispatcher);
     }
 }
