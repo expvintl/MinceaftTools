@@ -1,7 +1,6 @@
 package com.expvintl.mctools.events.player;
 
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.system.windows.INPUT;
 
 public class PlayerBreakBlockEvent {
     private static final PlayerBreakBlockEvent INSTANCE=new PlayerBreakBlockEvent();

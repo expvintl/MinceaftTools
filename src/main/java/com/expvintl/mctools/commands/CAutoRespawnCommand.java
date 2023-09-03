@@ -3,7 +3,6 @@ package com.expvintl.mctools.commands;
 import com.expvintl.mctools.FeaturesBool;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.client.OpenScreenEvent;
-import com.expvintl.mctools.mixin.interfaces.SimpleOptionAccessor;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;

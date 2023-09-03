@@ -9,6 +9,9 @@
   ],
   "client": [
     "MinecraftClientMixin",
+    "SoundSystemMixin",
+    "interfaces.ClientPlayerInteractionManagerAccessor",
+    "interfaces.MinecraftClientAccessor",
     "interfaces.SimpleOptionAccessor",
     "player.ClientPlayerInteractionManagerMixin"
   ],

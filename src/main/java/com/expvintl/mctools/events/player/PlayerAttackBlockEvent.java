@@ -1,6 +1,5 @@
 package com.expvintl.mctools.events.player;
 
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 

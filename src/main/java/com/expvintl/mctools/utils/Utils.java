@@ -1,14 +1,17 @@
 package com.expvintl.mctools.utils;
 
+import com.expvintl.mctools.mixin.interfaces.MinecraftClientAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Timer;
 
 public class Utils {
     private static final MinecraftClient mc=MinecraftClient.getInstance();
+    public static final Timer timer=new Timer();
     public static String getCurrentDimensionName(){
         if(mc.world!=null){
             String dismenName=mc.world.getDimensionKey().getValue().toString();
@@ -98,5 +101,8 @@ public class Utils {
             }
         }
         return "未知";
+    }
+    public static void rightClick(){
+        ((MinecraftClientAccessor)mc).doItemUse();
     }
 }

@@ -1,10 +1,9 @@
 package com.expvintl.mctools.mixin;
 
-import com.expvintl.mctools.FeaturesBool;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.client.OpenScreenEvent;
+import com.expvintl.mctools.events.client.PreTickEvent;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,4 +17,9 @@ public class MinecraftClientMixin {
     private void onSetScreen(Screen screen, CallbackInfo info){
         MCEventBus.INSTANCE.post(OpenScreenEvent.get(screen));
     }
+    @Inject(method = "tick",at=@At("HEAD"))
+    private void onPreTick(CallbackInfo ci){
+        MCEventBus.INSTANCE.register(PreTickEvent.get());
+    }
+
 }

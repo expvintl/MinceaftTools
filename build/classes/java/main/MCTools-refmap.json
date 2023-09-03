@@ -1,7 +1,17 @@
 {
   "mappings": {
     "com/expvintl/mctools/mixin/MinecraftClientMixin": {
-      "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V"
+      "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V",
+      "tick": "Lnet/minecraft/class_310;method_1574()V"
+    },
+    "com/expvintl/mctools/mixin/SoundSystemMixin": {
+      "play(Lnet/minecraft/client/sound/SoundInstance;)V": "Lnet/minecraft/class_1140;method_4854(Lnet/minecraft/class_1113;)V"
+    },
+    "com/expvintl/mctools/mixin/interfaces/ClientPlayerInteractionManagerAccessor": {
+      "syncSelectedSlot": "method_2911()V"
+    },
+    "com/expvintl/mctools/mixin/interfaces/MinecraftClientAccessor": {
+      "doItemUse": "method_1583()V"
     },
     "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
       "value": "field_37868:Ljava/lang/Object;"
@@ -20,7 +30,17 @@
   "data": {
     "named:intermediary": {
       "com/expvintl/mctools/mixin/MinecraftClientMixin": {
-        "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V"
+        "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V",
+        "tick": "Lnet/minecraft/class_310;method_1574()V"
+      },
+      "com/expvintl/mctools/mixin/SoundSystemMixin": {
+        "play(Lnet/minecraft/client/sound/SoundInstance;)V": "Lnet/minecraft/class_1140;method_4854(Lnet/minecraft/class_1113;)V"
+      },
+      "com/expvintl/mctools/mixin/interfaces/ClientPlayerInteractionManagerAccessor": {
+        "syncSelectedSlot": "method_2911()V"
+      },
+      "com/expvintl/mctools/mixin/interfaces/MinecraftClientAccessor": {
+        "doItemUse": "method_1583()V"
       },
       "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
         "value": "field_37868:Ljava/lang/Object;"

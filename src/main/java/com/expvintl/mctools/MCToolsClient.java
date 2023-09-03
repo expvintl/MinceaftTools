@@ -10,15 +10,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ServerInfo;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.Objects;
 
 
 public class MCToolsClient implements ClientModInitializer {
@@ -57,7 +53,12 @@ public class MCToolsClient implements ClientModInitializer {
             }else{
                 AddText(drawContext,String.format("X:%.2f Y:%.2f Z:%.2f",playerPos.x,playerPos.y,playerPos.z));
             }
+            AddText(drawContext,String.format("世界时间: %d天 (%d 小时)",mc.world.getTimeOfDay()/24000,((mc.world.getTimeOfDay()/24000)*20)/60));
             AddText(drawContext,String.format("当前区块: [%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z));
+            ItemStack currentItem=p.getInventory().getMainHandStack();
+            if(currentItem!=null&&currentItem.isDamageable()){
+                AddText(drawContext,String.format("耐久度:%d/%d",currentItem.getMaxDamage()-currentItem.getDamage(),currentItem.getMaxDamage()));
+            }
         }
     }
     private static void AddText(DrawContext drawContext,String text){
@@ -70,6 +71,7 @@ public class MCToolsClient implements ClientModInitializer {
         CFullbirghtCommand.register(dispatcher);
         CAutoRespawnCommand.register(dispatcher);
         CSafeWalkCommand.register(dispatcher);
+        CAutoFishCommand.register(dispatcher);
         CAutoToolCommand.register(dispatcher);
         CQServerPluginsCommand.register(dispatcher);
     }

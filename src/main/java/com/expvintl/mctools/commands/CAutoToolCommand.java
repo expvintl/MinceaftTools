@@ -4,6 +4,7 @@ import com.expvintl.mctools.FeaturesBool;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.player.PlayerAttackBlockEvent;
 import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
+import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -14,6 +15,8 @@ import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BambooSaplingBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.item.SwordItem;
@@ -76,14 +79,14 @@ public class CAutoToolCommand {
             }
         }
         //确定已经选择好了工具就切换
-        if((slot!=-1&&bestScore>getScore(currentItem,state))||shouldStopUsing(currentItem)||!isTools(currentItem)) {
+        if((slot!=-1&&bestScore>getScore(currentItem,state)&&!lowDurability(currentItem))||!isTools(currentItem)) {
             //记住上一次的槽方便恢复
             lastSlot=mc.player.getInventory().selectedSlot;
             //切换过去
             mc.player.getInventory().selectedSlot = slot;
-        }
-        if(isTools(currentItem)&&shouldStopUsing(currentItem)) {
-            mc.options.attackKey.setPressed(false);
+            if(mc.interactionManager!=null) {
+                ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
+            }
         }
     }
     public double getScore(ItemStack item, BlockState state){
@@ -92,6 +95,13 @@ public class CAutoToolCommand {
         if(item.getItem() instanceof ToolItem || item.getItem() instanceof ShearsItem){
             //根据挖掘速度提升评分
             score+=item.getMiningSpeedMultiplier(state)*10;
+            //附魔加分
+            //耐久
+            score+= EnchantmentHelper.getLevel(Enchantments.UNBREAKING,item)*10;
+            //效率
+            score+=EnchantmentHelper.getLevel(Enchantments.EFFICIENCY,item)*5;
+            //经验修补(此项最优先)
+            score+=EnchantmentHelper.getLevel(Enchantments.MENDING,item)*20;
             if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock || state.getBlock() instanceof BambooSaplingBlock))
                 //根据挖掘等级加分
                 score += 90 + (item1.getMaterial().getMiningLevel() * 10);
@@ -99,8 +109,8 @@ public class CAutoToolCommand {
         return score;
     }
     //停用低耐久度
-    private boolean shouldStopUsing(ItemStack itemStack) {
-        return  (itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 6 / 100);
+    private boolean lowDurability(ItemStack itemStack) {
+        return  (itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 10 / 100);
     }
     public boolean isTools(ItemStack item){
         return item.getItem() instanceof ToolItem || item.getItem() instanceof ShearsItem;
