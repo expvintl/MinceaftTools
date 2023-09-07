@@ -2,7 +2,7 @@ package com.expvintl.mctools.commands;
 
 import com.expvintl.mctools.FeaturesBool;
 import com.expvintl.mctools.events.MCEventBus;
-import com.expvintl.mctools.events.network.PacketEvent;
+import com.expvintl.mctools.events.network.PacketReceiveEvent;
 import com.expvintl.mctools.utils.Utils;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
@@ -42,7 +42,7 @@ public class CQServerPluginsCommand {
         return Command.SINGLE_SUCCESS;
     }
     @Subscribe
-    public void onReceivePacket(PacketEvent p){
+    public void onReceivePacket(PacketReceiveEvent p){
         //探测bukkit服务器插件
         if (!MinecraftClient.getInstance().isIntegratedServerRunning()&&FeaturesBool.checkBukkitPlugins) {
             if (p.packet instanceof CommandSuggestionsS2CPacket sg) {

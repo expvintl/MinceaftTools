@@ -25,11 +25,22 @@ public class MCToolsClient implements ClientModInitializer {
         //初始化命令注册回调
         ClientCommandRegistrationCallback.EVENT.register(MCToolsClient::registerCommands);
         HudRenderCallback.EVENT.register(MCToolsClient::drawHUD);
-    }
 
+    }
+    private static String gameDayToRealTimeFormat(long gameDays){
+        long min=gameDays*20;
+        if(min<60){
+            return String.format("%d 分钟",min);
+        }else if(min>60&&min<1440){
+            return String.format("%d 小时",min/60);
+        }else if(min>1440){
+            return String.format("%d 天",(min/60)/24);
+        }else {
+            return String.format("%d 分钟",min);
+        }
+    }
     private static void drawHUD(DrawContext drawContext, float v) {
         MinecraftClient mc=MinecraftClient.getInstance();
-
         //跳过调试
         if(mc.options.debugEnabled) return;
 
@@ -53,7 +64,7 @@ public class MCToolsClient implements ClientModInitializer {
             }else{
                 AddText(drawContext,String.format("X:%.2f Y:%.2f Z:%.2f",playerPos.x,playerPos.y,playerPos.z));
             }
-            AddText(drawContext,String.format("世界时间: %d天 (%d 小时)",mc.world.getTimeOfDay()/24000,((mc.world.getTimeOfDay()/24000)*20)/60));
+            AddText(drawContext,String.format("世界时间: %d天 (%s)",mc.world.getTimeOfDay()/24000,gameDayToRealTimeFormat(mc.world.getTimeOfDay()/24000)));
             AddText(drawContext,String.format("当前区块: [%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z));
             ItemStack currentItem=p.getInventory().getMainHandStack();
             if(currentItem!=null&&currentItem.isDamageable()){
@@ -63,7 +74,7 @@ public class MCToolsClient implements ClientModInitializer {
     }
     private static void AddText(DrawContext drawContext,String text){
         TextRenderer renderer=MinecraftClient.getInstance().textRenderer;
-        drawContext.drawText(renderer,text,0,infoY,Colors.GRAY,false);
+        drawContext.drawText(renderer,text,0,infoY,Colors.WHITE,false);
         infoY+=10;
     }
     private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
@@ -74,5 +85,7 @@ public class MCToolsClient implements ClientModInitializer {
         CAutoFishCommand.register(dispatcher);
         CAutoToolCommand.register(dispatcher);
         CQServerPluginsCommand.register(dispatcher);
+        CNoFallPacketCommand.register(dispatcher);
+        CFindBlockCommand.register(dispatcher);
     }
 }

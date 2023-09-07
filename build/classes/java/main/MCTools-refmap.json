@@ -1,5 +1,9 @@
 {
   "mappings": {
+    "com/expvintl/mctools/mixin/GameRendererMixin": {
+      "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V": "Lnet/minecraft/class_3695;method_15405(Ljava/lang/String;)V",
+      "renderWorld": "Lnet/minecraft/class_757;method_3188(FJLnet/minecraft/class_4587;)V"
+    },
     "com/expvintl/mctools/mixin/MinecraftClientMixin": {
       "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V",
       "tick": "Lnet/minecraft/class_310;method_1574()V"
@@ -13,11 +17,16 @@
     "com/expvintl/mctools/mixin/interfaces/MinecraftClientAccessor": {
       "doItemUse": "method_1583()V"
     },
+    "com/expvintl/mctools/mixin/interfaces/PlayerMoveC2SPacketAccessor": {
+      "onGround": "field_29179:Z",
+      "y": "field_12886:D"
+    },
     "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
       "value": "field_37868:Ljava/lang/Object;"
     },
     "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
-      "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
+      "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V",
+      "send(Lnet/minecraft/network/packet/Packet;)V": "Lnet/minecraft/class_2535;method_10743(Lnet/minecraft/class_2596;)V"
     },
     "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
       "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z",
@@ -29,6 +38,10 @@
   },
   "data": {
     "named:intermediary": {
+      "com/expvintl/mctools/mixin/GameRendererMixin": {
+        "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V": "Lnet/minecraft/class_3695;method_15405(Ljava/lang/String;)V",
+        "renderWorld": "Lnet/minecraft/class_757;method_3188(FJLnet/minecraft/class_4587;)V"
+      },
       "com/expvintl/mctools/mixin/MinecraftClientMixin": {
         "setScreen": "Lnet/minecraft/class_310;method_1507(Lnet/minecraft/class_437;)V",
         "tick": "Lnet/minecraft/class_310;method_1574()V"
@@ -42,11 +55,16 @@
       "com/expvintl/mctools/mixin/interfaces/MinecraftClientAccessor": {
         "doItemUse": "method_1583()V"
       },
+      "com/expvintl/mctools/mixin/interfaces/PlayerMoveC2SPacketAccessor": {
+        "onGround": "field_29179:Z",
+        "y": "field_12886:D"
+      },
       "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
         "value": "field_37868:Ljava/lang/Object;"
       },
       "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
-        "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V"
+        "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V",
+        "send(Lnet/minecraft/network/packet/Packet;)V": "Lnet/minecraft/class_2535;method_10743(Lnet/minecraft/class_2596;)V"
       },
       "com/expvintl/mctools/mixin/player/ClientPlayerInteractionManagerMixin": {
         "attackBlock": "Lnet/minecraft/class_636;method_2910(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z",
