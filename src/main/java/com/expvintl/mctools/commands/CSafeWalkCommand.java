@@ -1,6 +1,6 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.Globals;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -17,8 +17,8 @@ public class CSafeWalkCommand {
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        FeaturesBool.selfWalk=context.getArgument("开关", Boolean.class);
-        if(FeaturesBool.selfWalk){
+        Globals.selfWalk=context.getArgument("开关", Boolean.class);
+        if(Globals.selfWalk){
             context.getSource().getPlayer().sendMessage(Text.literal("已启用自动挂边!"));
         }else{
             context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动挂边!"));

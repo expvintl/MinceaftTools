@@ -4,6 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/MCTools.main.iml" filepath="$PROJECT_DIR$/.idea/modules/MCTools.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/MCTools.test.iml" filepath="$PROJECT_DIR$/.idea/modules/MCTools.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MinecraftProjects.MCTools.main.iml" filepath="$PROJECT_DIR$/.idea/modules/MinecraftProjects.MCTools.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MinecraftProjects.MCTools.test.iml" filepath="$PROJECT_DIR$/.idea/modules/MinecraftProjects.MCTools.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.expvintl.MCTools.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.expvintl.MCTools.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.expvintl.MCTools.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.expvintl.MCTools.test.iml" />
     </modules>
   </component>
 </project>

@@ -6,10 +6,9 @@
   "description": "",
   "authors": [],
   "contact": {
-    "repo": "https://github.com/undefined/MCTools"
+    "repo": "https://github.com/expvintl/MCTools"
   },
   "license": "All-Rights-Reserved",
-  "icon": "assets/mctools/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -20,8 +19,8 @@
     "mctools.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": ">=0.8.0",
     "fabric": "*",
-    "minecraft": "1.20.1"
+    "minecraft": "~1.21"
   }
 }

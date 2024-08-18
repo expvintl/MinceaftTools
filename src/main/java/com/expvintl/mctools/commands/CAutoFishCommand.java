@@ -1,6 +1,6 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.Globals;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.client.sounds.PlaySoundEvent;
 import com.expvintl.mctools.utils.Utils;
@@ -25,8 +25,8 @@ public class CAutoFishCommand {
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        FeaturesBool.autoFish=context.getArgument("开关", Boolean.class);
-        if(FeaturesBool.autoFish){
+        Globals.autoFish=context.getArgument("开关", Boolean.class);
+        if(Globals.autoFish){
             context.getSource().getPlayer().sendMessage(Text.literal("已启用自动钓鱼!"));
         }else{
             context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动钓鱼!"));
@@ -35,7 +35,7 @@ public class CAutoFishCommand {
     }
     @Subscribe
     private void onPlaySound(PlaySoundEvent event){
-        if(FeaturesBool.autoFish) {
+        if(Globals.autoFish) {
             //自动钓鱼
             if (event.soundInstance.getId().getPath().equals("entity.fishing_bobber.splash")) {
                 //收杆

@@ -1,6 +1,6 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.Globals;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.client.OpenScreenEvent;
 import com.google.common.eventbus.Subscribe;
@@ -24,8 +24,8 @@ public class CAutoRespawnCommand {
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        FeaturesBool.autoRespawn=context.getArgument("开关", Boolean.class);
-        if(FeaturesBool.autoRespawn){
+        Globals.autoRespawn=context.getArgument("开关", Boolean.class);
+        if(Globals.autoRespawn){
             context.getSource().getPlayer().sendMessage(Text.literal("已启用自动重生!"));
         }else{
             context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动重生!"));
@@ -34,7 +34,7 @@ public class CAutoRespawnCommand {
     }
     @Subscribe
     private void onOpenScreen(OpenScreenEvent event){
-        if(FeaturesBool.autoRespawn) {
+        if(Globals.autoRespawn) {
             //自动重生
             if (event.screen instanceof DeathScreen) {
                 if (MinecraftClient.getInstance().player != null) {

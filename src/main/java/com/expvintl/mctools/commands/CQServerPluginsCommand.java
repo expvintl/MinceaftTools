@@ -1,6 +1,6 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.Globals;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.network.PacketReceiveEvent;
 import com.expvintl.mctools.utils.Utils;
@@ -29,13 +29,13 @@ public class CQServerPluginsCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         //注册数据包接受事件
         MCEventBus.INSTANCE.register(INSTANCE);
-        FeaturesBool.checkBukkitPlugins=true;
+        Globals.checkBukkitPlugins=true;
         context.getSource().getPlayer().networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(new Random().nextInt(200),"bukkit:ver "));
         //1秒后关闭避免识别其他命令提示
         Utils.timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                FeaturesBool.checkBukkitPlugins=false;
+                Globals.checkBukkitPlugins=false;
                 MCEventBus.INSTANCE.unregister(INSTANCE);
             }
         },1000);
@@ -44,7 +44,7 @@ public class CQServerPluginsCommand {
     @Subscribe
     public void onReceivePacket(PacketReceiveEvent p){
         //探测bukkit服务器插件
-        if (!MinecraftClient.getInstance().isIntegratedServerRunning()&&FeaturesBool.checkBukkitPlugins) {
+        if (!MinecraftClient.getInstance().isIntegratedServerRunning()&& Globals.checkBukkitPlugins) {
             if (p.packet instanceof CommandSuggestionsS2CPacket sg) {
                 StringBuilder buf=new StringBuilder();
                 buf.append(String.format("找到%d个插件:",sg.getSuggestions().getList().size())).append('\n');
@@ -54,7 +54,7 @@ public class CQServerPluginsCommand {
                 if(MinecraftClient.getInstance().player!=null){
                     MinecraftClient.getInstance().player.sendMessage(Text.literal(buf.toString()));
                 }
-                FeaturesBool.checkBukkitPlugins=false;
+                Globals.checkBukkitPlugins=false;
                 //取消事件注册
                 MCEventBus.INSTANCE.unregister(INSTANCE);
             }

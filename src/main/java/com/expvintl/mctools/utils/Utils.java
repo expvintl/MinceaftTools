@@ -2,6 +2,7 @@ package com.expvintl.mctools.utils;
 
 import com.expvintl.mctools.mixin.interfaces.MinecraftClientAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +10,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -20,7 +26,9 @@ import net.minecraft.world.biome.Biome;
 import java.awt.*;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
+import java.util.logging.Logger;
 
 public class Utils {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
@@ -28,7 +36,7 @@ public class Utils {
 
     public static String getCurrentDimensionName() {
         if (mc.world != null) {
-            String dismenName = mc.world.getDimensionKey().getValue().toString();
+            String dismenName = mc.world.getDimensionEntry().getIdAsString();
             switch (dismenName) {
                 case "minecraft:overworld":
                     return "主世界";
@@ -183,23 +191,28 @@ public class Utils {
         return "未知";
     }
 
+    public static int GetEnchantLevel(RegistryKey<Enchantment> enchantName, ItemStack item){
+        //跳过附魔书
+        if(item.getItem()== Items.ENCHANTED_BOOK) return 0;
+        Set<Object2IntMap.Entry<RegistryEntry<Enchantment>>> enchants=item.getEnchantments().getEnchantmentEntries();
+        for(Object2IntMap.Entry<RegistryEntry<Enchantment>> entry:enchants){
+            //返回找到的附魔等级
+            if(entry.getKey().matchesKey(enchantName)) {
+                return entry.getIntValue();
+            }
+        }
+        return 0;
+    }
     public static void rightClick() {
         ((MinecraftClientAccessor) mc).doItemUse();
-    }
-
-    public static Identifier getPlayerSkinTexture(String name) {
-        if (Objects.isNull(mc.getNetworkHandler())) return null;
-        PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(name);
-        if (Objects.isNull(entry)) return null;
-        return entry.getSkinTexture();
     }
 
     public static void findBlock(ClientPlayerEntity player, String itemName, int radius) {
         if (mc.world == null) return;
         Vec3d pos = player.getBlockPos().toCenterPos();
-        for (int hight = (int)pos.y - 5; hight < pos.y; hight++) {
-            for (int x = (int) pos.x; x < (pos.x + radius); x++) {
-                for (int z = (int) pos.z; z < (pos.z + radius); z++) {
+        for (int hight = (int)pos.y - 15; hight < pos.y; hight++) {
+            for (int x = (int) -pos.x; x < (pos.x + radius); x++) {
+                for (int z = (int) -pos.z; z < (pos.z + radius); z++) {
                     BlockState b = mc.world.getBlockState(new BlockPos(x,  hight, z));
                     if (b.getBlock().asItem().getName().getString().equals(itemName)) {
                         mc.player.sendMessage(Text.literal(String.format("找到方块:%d,%d,%d", x, hight, z)));

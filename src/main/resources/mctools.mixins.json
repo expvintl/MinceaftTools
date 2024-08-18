@@ -2,14 +2,13 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.expvintl.mctools.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "interfaces.PlayerMoveC2SPacketAccessor",
     "network.ClientConnectionMixin",
     "player.PlayerEntityMixin"
   ],
   "client": [
-    "GameRendererMixin",
     "MinecraftClientMixin",
     "SoundSystemMixin",
     "interfaces.ClientPlayerInteractionManagerAccessor",

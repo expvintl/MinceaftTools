@@ -1,6 +1,6 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
+import com.expvintl.mctools.Globals;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.network.PacketSendEvent;
 import com.expvintl.mctools.mixin.interfaces.PlayerMoveC2SPacketAccessor;
@@ -26,11 +26,11 @@ public class CNoFallPacketCommand {
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        FeaturesBool.noFallPacket=context.getArgument("开关", Boolean.class);
-        if(FeaturesBool.noFallPacket){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用无坠落数据包!"));
+        Globals.noFallPacket=context.getArgument("开关", Boolean.class);
+        if(Globals.noFallPacket){
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用摔落伤害!"));
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用无坠落数据包!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用摔落伤害!"));
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -39,9 +39,9 @@ public class CNoFallPacketCommand {
         //跳过非移动的数据包
         if(!(event.packet instanceof PlayerMoveC2SPacket)) return;
         //跳过创造
-        if(FeaturesBool.noFallPacket&& !mc.player.getAbilities().creativeMode){
+        if(Globals.noFallPacket&& !mc.player.getAbilities().creativeMode){
             if(mc.player.isFallFlying()) return;
-            if(mc.player.getVelocity().y>-0.5) return;
+            if(mc.player.getVelocity().y> -0.5) return;
             //直接发送在地面的数据包来免伤
             ((PlayerMoveC2SPacketAccessor)event.packet).setOnGround(true);
         }

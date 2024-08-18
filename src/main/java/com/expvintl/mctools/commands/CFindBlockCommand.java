@@ -1,13 +1,11 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.FeaturesBool;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.client.RenderWorldEvent;
 import com.expvintl.mctools.utils.Utils;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
