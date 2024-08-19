@@ -1,6 +1,7 @@
 package com.expvintl.mctools.utils;
 
 import com.expvintl.mctools.mixin.interfaces.MinecraftClientAccessor;
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.block.Block;
@@ -17,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -29,10 +31,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     private static final MinecraftClient mc = MinecraftClient.getInstance();
     public static final Timer timer = new Timer();
+    private static final Pattern usernameRegex = Pattern.compile("^(?:<[0-9]{2}:[0-9]{2}>\\s)?<(.*?)>.*");
 
     public static String getCurrentDimensionName() {
         if (mc.world != null) {
@@ -220,5 +225,37 @@ public class Utils {
                 }
             }
         }
+    }
+    public static boolean isReady(){
+        MinecraftClient cli=MinecraftClient.getInstance();
+        return cli!=null&&cli.world!=null&&cli.player!=null;
+    }
+
+    public static void DrawHeadIcon(DrawContext draw, ChatHudLine.Visible text,int y){
+        StringBuffer buf=new StringBuffer();
+        text.content().accept((idx,style,codePoint)->{
+            buf.appendCodePoint(codePoint);
+            return true;
+        });
+        String txt=buf.toString();
+        GameProfile sender=getChatSender(txt);
+        if(sender==null) return;
+        PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(sender.getId());
+        if (entry == null) return;
+
+        Identifier skin = entry.getSkinTextures().texture();
+
+        draw.drawTexture(skin, 0, y, 8, 8, 8, 8, 8, 8, 64, 64);
+        draw.drawTexture(skin, 0, y, 8, 8, 40, 8, 8, 8, 64, 64);
+        draw.getMatrices().translate(10, 0, 0);
+    }
+    public static GameProfile getChatSender(String text){
+        Matcher usernameMatcher=usernameRegex.matcher(text);
+        if(usernameMatcher.matches()){
+            String username=usernameMatcher.group(1);
+            PlayerListEntry entry=mc.getNetworkHandler().getPlayerListEntry(username);
+            if(entry!=null) return entry.getProfile();
+        }
+        return null;
     }
 }

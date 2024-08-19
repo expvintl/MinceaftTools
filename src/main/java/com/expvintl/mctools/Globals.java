@@ -1,13 +1,13 @@
 package com.expvintl.mctools;
 
-import com.expvintl.mctools.types.GBool;
+import com.expvintl.mctools.types.Setting;
 
 public class Globals {
-    public static GBool autoRespawn=new GBool();
-    public static GBool selfWalk=new GBool();
-    public static GBool checkBukkitPlugins=new GBool();
-    public static GBool autoTool=new GBool();
-    public static GBool autoFish=new GBool();
-    public static GBool noFallPacket=new GBool();
+    public static Setting autoRespawn=new Setting();
+    public static Setting selfWalk=new Setting();
+    public static Setting checkBukkitPlugins=new Setting();
+    public static Setting autoTool=new Setting();
+    public static Setting autoFish=new Setting();
+    public static Setting noFallPacket=new Setting();
     public static int TPS=0;
 }

@@ -4,7 +4,10 @@
   "package": "com.expvintl.mctools.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "hud.ChatHudMixin",
+    "hud.PlayerListHudMixin",
     "interfaces.PlayerMoveC2SPacketAccessor",
+    "item.ItemStackMixin",
     "network.ClientConnectionMixin",
     "player.PlayerEntityMixin"
   ],

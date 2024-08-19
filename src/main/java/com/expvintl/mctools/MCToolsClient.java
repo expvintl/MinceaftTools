@@ -1,6 +1,8 @@
 package com.expvintl.mctools;
 
 import com.expvintl.mctools.commands.*;
+import com.expvintl.mctools.modules.BetterTooltip;
+import com.expvintl.mctools.modules.PlayerListTextLatency;
 import com.expvintl.mctools.utils.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
@@ -22,11 +24,14 @@ public class MCToolsClient implements ClientModInitializer {
     private static int infoY=1;
     @Override
     public void onInitializeClient() {
-
         //初始化命令注册回调
         ClientCommandRegistrationCallback.EVENT.register(MCToolsClient::registerCommands);
         HudRenderCallback.EVENT.register(MCToolsClient::drawHUD);
-
+        InitModules();
+    }
+    public void InitModules(){
+        BetterTooltip.INSTANCE.init();
+        PlayerListTextLatency.INSTANCE.init();
     }
     private static String gameDayToRealTimeFormat(long gameDays) {
         // 游戏 1 小时等于 20 分钟

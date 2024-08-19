@@ -102,7 +102,7 @@ public class CAutoToolCommand {
         //遍历每一个物品槽
         for(int i=0;i<9;i++){
             ItemStack item = mc.player.getInventory().getStack(i);
-            float score=getScore(item,state);
+            float score= getToolsScore(item,state);
             if(score<0) continue;
             //选出最好分数的工具
             if(score>bestScore){
@@ -123,9 +123,8 @@ public class CAutoToolCommand {
             }
         }
     }
-    public float getScore(ItemStack item, BlockState state){
+    public float getToolsScore(ItemStack item, BlockState state){
         float score=0;
-        //Is Tool!!
         if(item.getItem() instanceof ToolItem || item.getItem() instanceof ShearsItem){
             //根据挖掘速度提升评分
             score+=item.getMiningSpeedMultiplier(state)*30;
@@ -134,7 +133,7 @@ public class CAutoToolCommand {
             score+= Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
             //效率
             score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
-            //经验修补(此项最优先)
+            //经验修补
             score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
             if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock))
                 //根据挖掘等级加分

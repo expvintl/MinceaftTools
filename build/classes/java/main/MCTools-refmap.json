@@ -7,6 +7,15 @@
     "com/expvintl/mctools/mixin/SoundSystemMixin": {
       "play(Lnet/minecraft/client/sound/SoundInstance;)V": "Lnet/minecraft/class_1140;method_4854(Lnet/minecraft/class_1113;)V"
     },
+    "com/expvintl/mctools/mixin/hud/ChatHudMixin": {
+      "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)I": "Lnet/minecraft/class_332;method_35720(Lnet/minecraft/class_327;Lnet/minecraft/class_5481;III)I",
+      "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;IIIZ)V"
+    },
+    "com/expvintl/mctools/mixin/hud/PlayerListHudMixin": {
+      "getPlayerName": "Lnet/minecraft/class_355;method_1918(Lnet/minecraft/class_640;)Lnet/minecraft/class_2561;",
+      "render": "Lnet/minecraft/class_355;method_1919(Lnet/minecraft/class_332;ILnet/minecraft/class_269;Lnet/minecraft/class_266;)V",
+      "renderLatencyIcon": "Lnet/minecraft/class_355;method_1923(Lnet/minecraft/class_332;IIILnet/minecraft/class_640;)V"
+    },
     "com/expvintl/mctools/mixin/interfaces/ClientPlayerInteractionManagerAccessor": {
       "syncSelectedSlot": "method_2911()V"
     },
@@ -19,6 +28,9 @@
     },
     "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
       "value": "field_37868:Ljava/lang/Object;"
+    },
+    "com/expvintl/mctools/mixin/item/ItemStackMixin": {
+      "getTooltip": "Lnet/minecraft/class_1799;method_7950(Lnet/minecraft/class_1792$class_9635;Lnet/minecraft/class_1657;Lnet/minecraft/class_1836;)Ljava/util/List;"
     },
     "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
       "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V",
@@ -42,6 +54,15 @@
       "com/expvintl/mctools/mixin/SoundSystemMixin": {
         "play(Lnet/minecraft/client/sound/SoundInstance;)V": "Lnet/minecraft/class_1140;method_4854(Lnet/minecraft/class_1113;)V"
       },
+      "com/expvintl/mctools/mixin/hud/ChatHudMixin": {
+        "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)I": "Lnet/minecraft/class_332;method_35720(Lnet/minecraft/class_327;Lnet/minecraft/class_5481;III)I",
+        "render": "Lnet/minecraft/class_338;method_1805(Lnet/minecraft/class_332;IIIZ)V"
+      },
+      "com/expvintl/mctools/mixin/hud/PlayerListHudMixin": {
+        "getPlayerName": "Lnet/minecraft/class_355;method_1918(Lnet/minecraft/class_640;)Lnet/minecraft/class_2561;",
+        "render": "Lnet/minecraft/class_355;method_1919(Lnet/minecraft/class_332;ILnet/minecraft/class_269;Lnet/minecraft/class_266;)V",
+        "renderLatencyIcon": "Lnet/minecraft/class_355;method_1923(Lnet/minecraft/class_332;IIILnet/minecraft/class_640;)V"
+      },
       "com/expvintl/mctools/mixin/interfaces/ClientPlayerInteractionManagerAccessor": {
         "syncSelectedSlot": "method_2911()V"
       },
@@ -54,6 +75,9 @@
       },
       "com/expvintl/mctools/mixin/interfaces/SimpleOptionAccessor": {
         "value": "field_37868:Ljava/lang/Object;"
+      },
+      "com/expvintl/mctools/mixin/item/ItemStackMixin": {
+        "getTooltip": "Lnet/minecraft/class_1799;method_7950(Lnet/minecraft/class_1792$class_9635;Lnet/minecraft/class_1657;Lnet/minecraft/class_1836;)Ljava/util/List;"
       },
       "com/expvintl/mctools/mixin/network/ClientConnectionMixin": {
         "handlePacket": "Lnet/minecraft/class_2535;method_10759(Lnet/minecraft/class_2596;Lnet/minecraft/class_2547;)V",

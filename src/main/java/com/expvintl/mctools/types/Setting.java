@@ -1,6 +1,6 @@
 package com.expvintl.mctools.types;
 
-public class GBool{
+public class Setting {
     public boolean value=false;
     public boolean get(){
         return this.value;
