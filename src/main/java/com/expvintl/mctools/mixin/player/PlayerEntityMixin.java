@@ -15,7 +15,7 @@ public class PlayerEntityMixin {
         if(MinecraftClient.getInstance().world!=null&&MinecraftClient.getInstance().player!=null) {
             if (!MinecraftClient.getInstance().world.isClient) return;
             //挂住边缘
-            if (Globals.selfWalk && !MinecraftClient.getInstance().player.isSneaking()) cir.setReturnValue(true);
+            if (Globals.selfWalk.get() && !MinecraftClient.getInstance().player.isSneaking()) cir.setReturnValue(true);
         }
     }
 }

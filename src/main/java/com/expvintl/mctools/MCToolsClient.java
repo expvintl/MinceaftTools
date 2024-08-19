@@ -44,13 +44,13 @@ public class MCToolsClient implements ClientModInitializer {
             timeString.append(days).append(" 天");
         }
         if (hours > 0) {
-            if (timeString.length() > 0) {
+            if (!timeString.isEmpty()) {
                 timeString.append(" ");
             }
             timeString.append(hours).append(" 小时");
         }
-        if (minutes > 0 || timeString.length() == 0) {
-            if (timeString.length() > 0) {
+        if (minutes > 0 || timeString.isEmpty()) {
+            if (!timeString.isEmpty()) {
                 timeString.append(" ");
             }
             timeString.append(minutes).append(" 分钟");
@@ -61,7 +61,7 @@ public class MCToolsClient implements ClientModInitializer {
     private static void drawHUD(DrawContext drawContext, RenderTickCounter v) {
         MinecraftClient mc=MinecraftClient.getInstance();
         //跳过调试
-        if(mc.options.hudHidden) return;
+        if(mc.getDebugHud().shouldShowDebugHud()||mc.options.hudHidden) return;
 
         if(mc.world!=null&&mc.player!=null) {
             infoY=1;
@@ -86,8 +86,6 @@ public class MCToolsClient implements ClientModInitializer {
             AddText(drawContext,String.format("世界时间: %d天 (%s)",mc.world.getTimeOfDay()/24000,gameDayToRealTimeFormat(mc.world.getTimeOfDay()/24000)));
             AddText(drawContext,String.format("当前区块: [%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z));
             AddText(drawContext,String.format("本地难度:%.2f",mc.world.getLocalDifficulty(mc.player.getBlockPos()).getLocalDifficulty()));
-            AddText(drawContext,String.format("服务器视距:%d 区块",mc.options.getSyncedOptions().viewDistance()));
-
             ItemStack currentItem=p.getInventory().getMainHandStack();
             if(currentItem!=null&&currentItem.isDamageable()){
                 AddText(drawContext,String.format("耐久度:%d/%d",currentItem.getMaxDamage()-currentItem.getDamage(),currentItem.getMaxDamage()));

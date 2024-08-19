@@ -6,6 +6,7 @@ import com.expvintl.mctools.events.player.PlayerAttackBlockEvent;
 import com.expvintl.mctools.events.player.PlayerAttackEntityEvent;
 import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
 import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
+import com.expvintl.mctools.utils.CommandUtils;
 import com.expvintl.mctools.utils.Utils;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
@@ -32,12 +33,13 @@ public class CAutoToolCommand {
     private int lastSlot=-1;
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher){
         MCEventBus.INSTANCE.register(INSTANCE);
+        CommandUtils.CreateStatusCommand("cautotool",Globals.autoTool,dispatcher);
         dispatcher.register(literal("cautotool").then(argument("开关", BoolArgumentType.bool()).executes(CAutoToolCommand::execute)));
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        Globals.autoTool=context.getArgument("开关", Boolean.class);
-        if(Globals.autoTool){
+        Globals.autoTool.set(context.getArgument("开关", Boolean.class));
+        if(Globals.autoTool.get()){
             context.getSource().getPlayer().sendMessage(Text.literal("已启用智能工具!"));
         }else{
             context.getSource().getPlayer().sendMessage(Text.literal("已禁用智能工具!"));
@@ -46,7 +48,7 @@ public class CAutoToolCommand {
     }
     @Subscribe
     private void onBreakBlock(PlayerBreakBlockEvent event){
-        if(!Globals.autoTool) return;
+        if(!Globals.autoTool.get()) return;
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
         if (lastSlot!=-1){
@@ -57,7 +59,7 @@ public class CAutoToolCommand {
     }
     @Subscribe
     private void onAttackEntity(PlayerAttackEntityEvent event){
-        if(!Globals.autoTool) return;
+        if(!Globals.autoTool.get()) return;
         if(event.target.hasCustomName()) return;
         //不对玩家使用
         if(event.target.isPlayer()) return;
@@ -86,7 +88,7 @@ public class CAutoToolCommand {
     }
     @Subscribe
     private void onAttackBlock(PlayerAttackBlockEvent event){
-        if(!Globals.autoTool) return;
+        if(!Globals.autoTool.get()) return;
         //自动工具
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;

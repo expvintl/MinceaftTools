@@ -29,13 +29,13 @@ public class CQServerPluginsCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         //注册数据包接受事件
         MCEventBus.INSTANCE.register(INSTANCE);
-        Globals.checkBukkitPlugins=true;
+        Globals.checkBukkitPlugins.set(true);
         context.getSource().getPlayer().networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(new Random().nextInt(200),"bukkit:ver "));
         //1秒后关闭避免识别其他命令提示
         Utils.timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Globals.checkBukkitPlugins=false;
+                Globals.checkBukkitPlugins.set(false);
                 MCEventBus.INSTANCE.unregister(INSTANCE);
             }
         },1000);
@@ -44,7 +44,7 @@ public class CQServerPluginsCommand {
     @Subscribe
     public void onReceivePacket(PacketReceiveEvent p){
         //探测bukkit服务器插件
-        if (!MinecraftClient.getInstance().isIntegratedServerRunning()&& Globals.checkBukkitPlugins) {
+        if (!MinecraftClient.getInstance().isIntegratedServerRunning()&& Globals.checkBukkitPlugins.get()) {
             if (p.packet instanceof CommandSuggestionsS2CPacket sg) {
                 StringBuilder buf=new StringBuilder();
                 buf.append(String.format("找到%d个插件:",sg.getSuggestions().getList().size())).append('\n');
@@ -54,7 +54,7 @@ public class CQServerPluginsCommand {
                 if(MinecraftClient.getInstance().player!=null){
                     MinecraftClient.getInstance().player.sendMessage(Text.literal(buf.toString()));
                 }
-                Globals.checkBukkitPlugins=false;
+                Globals.checkBukkitPlugins.set(false);
                 //取消事件注册
                 MCEventBus.INSTANCE.unregister(INSTANCE);
             }

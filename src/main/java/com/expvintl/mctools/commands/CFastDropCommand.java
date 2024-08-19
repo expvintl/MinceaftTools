@@ -1,6 +1,7 @@
 package com.expvintl.mctools.commands;
 
 import com.expvintl.mctools.mixin.interfaces.SimpleOptionAccessor;
+import com.expvintl.mctools.utils.PlayerUtils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -31,6 +32,9 @@ public class CFastDropCommand {
         trashItem.add(Items.BASALT); //玄武岩
         trashItem.add(Items.DIRT);//泥土
         trashItem.add(Items.PUFFERFISH);//河豚
+        trashItem.add(Items.DANDELION);
+        trashItem.add(Items.SUNFLOWER);
+        trashItem.add(Items.CORNFLOWER);
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
@@ -43,7 +47,7 @@ public class CFastDropCommand {
             ItemStack item = inv.main.get(i);
             for (Item trash : trashItem) {
                 if (item.getItem() == trash) {
-                    player.dropStack(item);
+                    PlayerUtils.DropItem(i);
                 }
             }
         }
