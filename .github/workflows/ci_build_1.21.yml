@@ -1,0 +1,25 @@
+name: Build1.21
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取项目
+        uses: actions/checkout@v4
+      - name: 初始化环境
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica'
+          java-version: '21'
+      - name: 初始化Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: 构建项目
+        run: ./gradlew build
+      - name: 上传成品
+        uses: actions/upload-artifact@v3
+        with:
+          name: MCTools.jar
+          path: build/libs/MCTools-1.0.jar
+          retention-days: 16
