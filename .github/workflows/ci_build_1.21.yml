@@ -17,7 +17,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: 构建项目
         run: ./gradlew build
-      - name: 上传成品
+      - name: 上传构建
         uses: actions/upload-artifact@v3
         with:
           name: MCTools.jar
