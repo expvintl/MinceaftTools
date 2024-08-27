@@ -11,6 +11,7 @@ import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ChatHud.class)
 public class ChatHudMixin {
