@@ -41,7 +41,7 @@ public class Utils {
 
     public static String getCurrentDimensionName() {
         if (mc.world != null) {
-            String dismenName = mc.world.getDimensionEntry().getIdAsString();
+            String dismenName = mc.world.getDimensionKey().getValue().toString();
             switch (dismenName) {
                 case "minecraft:overworld":
                     return "主世界";
@@ -196,18 +196,18 @@ public class Utils {
         return "未知";
     }
 
-    public static int GetEnchantLevel(RegistryKey<Enchantment> enchantName, ItemStack item){
-        //跳过附魔书
-        if(item.getItem()== Items.ENCHANTED_BOOK) return 0;
-        Set<Object2IntMap.Entry<RegistryEntry<Enchantment>>> enchants=item.getEnchantments().getEnchantmentEntries();
-        for(Object2IntMap.Entry<RegistryEntry<Enchantment>> entry:enchants){
-            //返回找到的附魔等级
-            if(entry.getKey().matchesKey(enchantName)) {
-                return entry.getIntValue();
-            }
-        }
-        return 0;
-    }
+//    public static int GetEnchantLevel(RegistryKey<Enchantment> enchantName, ItemStack item){
+//        //跳过附魔书
+//        if(item.getItem()== Items.ENCHANTED_BOOK) return 0;
+//        Set<Object2IntMap.Entry<RegistryEntry<Enchantment>>> enchants=item.getEnchantments().getEnchantmentEntries();
+//        for(Object2IntMap.Entry<RegistryEntry<Enchantment>> entry:enchants){
+//            //返回找到的附魔等级
+//            if(entry.getKey().matchesKey(enchantName)) {
+//                return entry.getIntValue();
+//            }
+//        }
+//        return 0;
+//    }
     public static void rightClick() {
         ((MinecraftClientAccessor) mc).doItemUse();
     }

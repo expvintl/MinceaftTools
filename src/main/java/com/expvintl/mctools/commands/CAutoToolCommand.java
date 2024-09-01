@@ -18,7 +18,7 @@ import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BambooShootBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -130,14 +130,14 @@ public class CAutoToolCommand {
             score+=item.getMiningSpeedMultiplier(state)*30;
             //附魔加分
             //耐久
-            score+= Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
+            score+= EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
             //效率
-            score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
+            score+=EnchantmentHelper.getLevel(Enchantments.EFFICIENCY,item);
             //经验修补
-            score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
+            score+=EnchantmentHelper.getLevel(Enchantments.MENDING,item);
             if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock))
                 //根据挖掘等级加分
-                score += 90 + (item1.getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
+                score += 90 + (item1.getMaterial().getMiningSpeedMultiplier() * 10);
         }
         return score;
     }
@@ -150,13 +150,13 @@ public class CAutoToolCommand {
         if (item.getItem() instanceof ToolItem tool) {
             damageScore += tool.getMaterial().getAttackDamage();
             //锋利加分
-            damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
+            damageScore += EnchantmentHelper.getLevel(Enchantments.SHARPNESS, item) * 2;
             //精修
-            damageScore+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
+            damageScore+=EnchantmentHelper.getLevel(Enchantments.MENDING,item);
             //火焰附加
-            damageScore+=Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT,item)*3;
+            damageScore+=EnchantmentHelper.getLevel(Enchantments.FIRE_ASPECT,item)*3;
             //击退
-            damageScore+=Utils.GetEnchantLevel(Enchantments.KNOCKBACK,item)*2;
+            damageScore+=EnchantmentHelper.getLevel(Enchantments.KNOCKBACK,item)*2;
         }
         return damageScore;
     }
