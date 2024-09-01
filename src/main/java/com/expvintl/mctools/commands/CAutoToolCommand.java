@@ -19,6 +19,7 @@ import net.minecraft.block.BambooShootBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,7 +67,7 @@ public class CAutoToolCommand {
         float bestScore=-1;
         int slot=-1;
         for(int i=0;i<9;i++) {
-            float score=getWeaponScore(event.player,event.target,i);
+            float score=getWeaponScore(event.player,i);
             if(score<0) continue;
             //选出最好分数的工具
             if(score>bestScore){
@@ -135,13 +136,16 @@ public class CAutoToolCommand {
             score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
             //经验修补
             score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
-            if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock))
-                //根据挖掘等级加分
-                score += 90 + (item1.getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
+            if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
+                if((item1.getComponents().get(DataComponentTypes.TOOL)!=null)){
+                    //根据挖掘等级加分
+                    score += 90 + (item1.getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
+                }
+            }
         }
         return score;
     }
-    public float getWeaponScore(PlayerEntity player,Entity target,int slot) {
+    public float getWeaponScore(PlayerEntity player,int slot) {
         float damageScore = 0;
         ItemStack item = player.getInventory().getStack(slot);
         //剑优先
