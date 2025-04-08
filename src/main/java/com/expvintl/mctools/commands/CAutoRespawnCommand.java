@@ -28,9 +28,9 @@ public class CAutoRespawnCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         Globals.autoRespawn.set(context.getArgument("开关", Boolean.class));
         if(Globals.autoRespawn.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动重生!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动重生!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动重生!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动重生!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }

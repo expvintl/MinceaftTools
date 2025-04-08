@@ -16,7 +16,7 @@ public class CFullbirghtCommand{
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         ((SimpleOptionAccessor)(Object)context.getSource().getClient().options.getGamma()).forceSetValue(32767.0);
-        context.getSource().getPlayer().sendMessage(Text.literal("已应用高亮"));
+        context.getSource().getPlayer().sendMessage(Text.literal("已应用高亮"),false);
         return Command.SINGLE_SUCCESS;
     }
 

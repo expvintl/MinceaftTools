@@ -11,6 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
@@ -30,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -220,7 +222,7 @@ public class Utils {
                 for (int z = (int) -pos.z; z < (pos.z + radius); z++) {
                     BlockState b = mc.world.getBlockState(new BlockPos(x,  hight, z));
                     if (b.getBlock().asItem().getName().getString().equals(itemName)) {
-                        mc.player.sendMessage(Text.literal(String.format("找到方块:%d,%d,%d", x, hight, z)));
+                        mc.player.sendMessage(Text.literal(String.format("找到方块:%d,%d,%d", x, hight, z)),false);
                     }
                 }
             }
@@ -244,9 +246,7 @@ public class Utils {
         if (entry == null) return;
 
         Identifier skin = entry.getSkinTextures().texture();
-
-        draw.drawTexture(skin, 0, y, 8, 8, 8, 8, 8, 8, 64, 64);
-        draw.drawTexture(skin, 0, y, 8, 8, 40, 8, 8, 8, 64, 64);
+        draw.drawTexture(RenderLayer::getGuiTextured, skin,0, y, 8, 8, 8, 8, 8, 8, 64, 64);
         draw.getMatrices().translate(10, 0, 0);
     }
     public static GameProfile getChatSender(String text){

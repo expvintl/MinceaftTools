@@ -31,9 +31,9 @@ public class CNoFallPacketCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         Globals.noFallPacket.set(context.getArgument("开关", Boolean.class));
         if(Globals.noFallPacket.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用摔落伤害!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用摔落伤害!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用摔落伤害!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用摔落伤害!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -43,7 +43,7 @@ public class CNoFallPacketCommand {
         if(!(event.packet instanceof PlayerMoveC2SPacket)) return;
         //跳过创造
         if(Globals.noFallPacket.get()&& !mc.player.getAbilities().creativeMode){
-            if(mc.player.isFallFlying()) return;
+            if(mc.player.fallDistance<=mc.player.getSafeFallDistance()) return;
             if(mc.player.getVelocity().y> -0.5) return;
             //直接发送在地面的数据包来免伤
             ((PlayerMoveC2SPacketAccessor)event.packet).setOnGround(true);

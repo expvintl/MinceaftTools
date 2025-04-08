@@ -26,6 +26,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 
+import java.awt.*;
+
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -41,9 +43,9 @@ public class CAutoToolCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         Globals.autoTool.set(context.getArgument("开关", Boolean.class));
         if(Globals.autoTool.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用智能工具!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用智能工具!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用智能工具!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用智能工具!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -52,11 +54,12 @@ public class CAutoToolCommand {
         if(!Globals.autoTool.get()) return;
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
-        if (lastSlot!=-1){
-            //破坏方块后切换回去
-            mc.player.getInventory().selectedSlot=lastSlot;
-            lastSlot=-1;
-        }
+        //TODO: 因bug禁用
+//        if (lastSlot!=-1){
+//            //破坏方块后切换回去
+//            mc.player.getInventory().setSelectedSlot(lastSlot);
+//            lastSlot=-1;
+//        }
     }
     @Subscribe
     private void onAttackEntity(PlayerAttackEntityEvent event){
@@ -80,7 +83,7 @@ public class CAutoToolCommand {
         //低耐久测试
         if(!lowDurability(currentItem)) {
             //切换过去
-            event.player.getInventory().selectedSlot = slot;
+            event.player.getInventory().setSelectedSlot(slot);
             MinecraftClient mc=MinecraftClient.getInstance();
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
@@ -116,17 +119,27 @@ public class CAutoToolCommand {
         //确定已经选择好了工具就切换
         if(!lowDurability(currentItem)) {
             //记住上一次的槽方便恢复
-            lastSlot=mc.player.getInventory().selectedSlot;
+            lastSlot=mc.player.getInventory().getSelectedSlot();
             //切换过去
-            mc.player.getInventory().selectedSlot = slot;
+            mc.player.getInventory().setSelectedSlot(slot);
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
             }
         }
     }
+    public boolean isSwordItem(Item item){
+        return item==Items.STONE_SWORD||item==Items.DIAMOND_SWORD||item==Items.GOLDEN_SWORD||item==Items.IRON_SWORD||item==Items.NETHERITE_SWORD||item==Items.WOODEN_SWORD;
+    }
+    public boolean isToolItem(Item item){
+        return item == Items.WOODEN_PICKAXE || item == Items.STONE_PICKAXE || item == Items.IRON_PICKAXE || item == Items.GOLDEN_PICKAXE || item == Items.DIAMOND_PICKAXE || item == Items.NETHERITE_PICKAXE
+                || item == Items.WOODEN_AXE || item == Items.STONE_AXE || item == Items.IRON_AXE || item == Items.GOLDEN_AXE || item == Items.DIAMOND_AXE || item == Items.NETHERITE_AXE
+                || item == Items.WOODEN_SHOVEL || item == Items.STONE_SHOVEL || item == Items.IRON_SHOVEL || item == Items.GOLDEN_SHOVEL || item == Items.DIAMOND_SHOVEL || item == Items.NETHERITE_SHOVEL
+                || item == Items.WOODEN_HOE || item == Items.STONE_HOE || item == Items.IRON_HOE || item == Items.GOLDEN_HOE || item == Items.DIAMOND_HOE || item == Items.NETHERITE_HOE
+                || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.GOLDEN_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD;
+    }
     public float getToolsScore(ItemStack item, BlockState state){
         float score=0;
-        if(item.getItem() instanceof ToolItem || item.getItem() instanceof ShearsItem){
+        if(isToolItem(item.getItem())||item.getItem() instanceof ShearsItem){
             //根据挖掘速度提升评分
             score+=item.getMiningSpeedMultiplier(state)*30;
             //附魔加分
@@ -136,10 +149,10 @@ public class CAutoToolCommand {
             score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
             //经验修补
             score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
-            if (item.getItem() instanceof SwordItem item1 && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
-                if((item1.getComponents().get(DataComponentTypes.TOOL)!=null)){
+            if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
+                if((item.getItem().getComponents().get(DataComponentTypes.TOOL)!=null)){
                     //根据挖掘等级加分
-                    score += 90 + (item1.getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
+                    score += 90 + (item.getItem().getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
                 }
             }
         }
@@ -149,10 +162,10 @@ public class CAutoToolCommand {
         float damageScore = 0;
         ItemStack item = player.getInventory().getStack(slot);
         //剑优先
-        if(item.getItem() instanceof SwordItem) damageScore+=10;
+        if(isSwordItem(item.getItem())) damageScore+=10;
         //使用所有工具组
-        if (item.getItem() instanceof ToolItem tool) {
-            damageScore += tool.getMaterial().getAttackDamage();
+        if (isToolItem(item.getItem())) {
+            damageScore += item.getDamage();
             //锋利加分
             damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
             //精修

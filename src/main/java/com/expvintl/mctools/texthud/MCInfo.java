@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Objects;
+
 public class MCInfo {
     private static String gameDayToRealTimeFormat(long gameDays) {
         // 游戏 1 小时等于 20 分钟
@@ -69,8 +71,8 @@ public class MCInfo {
             DrawUtils.AddLeftText(drawContext,String.format("世界时间: %d天 (%s)",mc.world.getTimeOfDay()/24000,gameDayToRealTimeFormat(mc.world.getTimeOfDay()/24000)));
             DrawUtils.AddLeftText(drawContext,String.format("当前区块: [%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z));
             DrawUtils.AddLeftText(drawContext,String.format("本地难度:%.2f",mc.world.getLocalDifficulty(mc.player.getBlockPos()).getLocalDifficulty()));
-            ItemStack currentItem=p.getInventory().getMainHandStack();
-            if(currentItem!=null&&currentItem.isDamageable()){
+            ItemStack currentItem=p.getMainHandStack();
+            if(Objects.nonNull(currentItem)&&currentItem.isDamageable()){
                 DrawUtils.AddLeftText(drawContext,String.format("耐久度:%d/%d",currentItem.getMaxDamage()-currentItem.getDamage(),currentItem.getMaxDamage()));
             }
         }

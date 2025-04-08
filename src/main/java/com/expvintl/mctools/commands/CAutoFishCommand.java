@@ -30,9 +30,9 @@ public class CAutoFishCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         Globals.autoFish.set(context.getArgument("开关", Boolean.class));
         if(Globals.autoFish.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动钓鱼!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动钓鱼!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动钓鱼!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动钓鱼!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }

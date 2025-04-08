@@ -9,7 +9,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class CommandUtils {
     public static void CreateStatusCommand(String cmd, Setting toggle, CommandDispatcher<FabricClientCommandSource> dispatcher){
         dispatcher.register(literal(cmd).executes((context -> {
-            context.getSource().getPlayer().sendMessage(Text.literal("当前启用状态: "+toggle.get()));
+            context.getSource().getPlayer().sendMessage(Text.literal("当前启用状态: "+toggle.get()),false);
             return Command.SINGLE_SUCCESS;
         })));
     }

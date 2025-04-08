@@ -36,12 +36,12 @@ public class CFastDropCommand {
             for(Item i:trashItem){
                 sb.append(i.getName().getString()).append(",");
             }
-            context.getSource().getPlayer().sendMessage(Text.literal(sb.toString()));
+            context.getSource().getPlayer().sendMessage(Text.literal(sb.toString()),false);
             return Command.SINGLE_SUCCESS;
         }))));
         dispatcher.register(literal("cfastdrop").then(literal("clear").executes((context -> {
             trashItem.clear();
-            context.getSource().getPlayer().sendMessage(Text.literal("已清除全部物品!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已清除全部物品!"),false);
             return Command.SINGLE_SUCCESS;
         }))));
         dispatcher.register(literal("cfastdrop").then(literal("del").then(argument("物品", ItemStackArgumentType.itemStack(access)).suggests(((context, builder) -> suggestItems(builder))).executes(cmd->{
@@ -49,12 +49,12 @@ public class CFastDropCommand {
             if (item != Items.AIR) { // 确保找到的物品是有效的
                 if (trashItem.contains(item)) {
                     trashItem.remove(item);
-                    cmd.getSource().getPlayer().sendMessage(Text.literal("已移除 " + item.getName().getString()));
+                    cmd.getSource().getPlayer().sendMessage(Text.literal("已移除 " + item.getName().getString()),false);
                 }else{
-                    cmd.getSource().getPlayer().sendMessage(Text.literal("没有找到 " + item.getName().getString()));
+                    cmd.getSource().getPlayer().sendMessage(Text.literal("没有找到 " + item.getName().getString()),false);
                 }
             }else{
-                cmd.getSource().getPlayer().sendMessage(Text.literal("无效物品!"));
+                cmd.getSource().getPlayer().sendMessage(Text.literal("无效物品!"),false);
                 return 0;
             }
             return Command.SINGLE_SUCCESS;
@@ -63,13 +63,13 @@ public class CFastDropCommand {
             Item item=ItemStackArgumentType.getItemStackArgument(cmd,"物品").getItem();
             if (item != Items.AIR) { // 确保找到的物品是有效的
                 if(trashItem.contains(item)){
-                    cmd.getSource().getPlayer().sendMessage(Text.literal( item.getName().getString() + " 已存在!"));
+                    cmd.getSource().getPlayer().sendMessage(Text.literal( item.getName().getString() + " 已存在!"),false);
                 }else {
                     trashItem.add(item);
-                    cmd.getSource().getPlayer().sendMessage(Text.literal("已添加 " + item.getName().getString() + " 到垃圾物品列表"));
+                    cmd.getSource().getPlayer().sendMessage(Text.literal("已添加 " + item.getName().getString() + " 到垃圾物品列表"),false);
                 }
             }else{
-                cmd.getSource().getPlayer().sendMessage(Text.literal("无效物品!"));
+                cmd.getSource().getPlayer().sendMessage(Text.literal("无效物品!"),false);
                 return 0;
             }
             return Command.SINGLE_SUCCESS;
@@ -104,15 +104,15 @@ public class CFastDropCommand {
             return 0;
         }
         PlayerInventory inv=player.getInventory();
-        for(int i=0;i<inv.main.size();i++) {
-            ItemStack item = inv.main.get(i);
+        for(int i=0;i<inv.size();i++) {
+            ItemStack item = inv.getStack(i);
             for (Item trash : trashItem) {
                 if (item.getItem() == trash) {
                     PlayerUtils.DropItem(i);
                 }
             }
         }
-        player.sendMessage(Text.literal("已丢弃无用物品!"));
+        player.sendMessage(Text.literal("已丢弃无用物品!"),false);
         return Command.SINGLE_SUCCESS;
     }
 

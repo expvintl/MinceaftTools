@@ -52,7 +52,7 @@ public class CQServerPluginsCommand {
                     buf.append('[').append(s.getText()).append(']').append(' ');
                 }
                 if(MinecraftClient.getInstance().player!=null){
-                    MinecraftClient.getInstance().player.sendMessage(Text.literal(buf.toString()));
+                    MinecraftClient.getInstance().player.sendMessage(Text.literal(buf.toString()),false);
                 }
                 Globals.checkBukkitPlugins.set(false);
                 //取消事件注册

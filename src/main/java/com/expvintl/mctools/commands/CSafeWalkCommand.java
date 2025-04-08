@@ -22,9 +22,9 @@ public class CSafeWalkCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         Globals.selfWalk.set(context.getArgument("开关", Boolean.class));
         if(Globals.selfWalk.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动挂边!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用自动挂边!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动挂边!"));
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用自动挂边!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }

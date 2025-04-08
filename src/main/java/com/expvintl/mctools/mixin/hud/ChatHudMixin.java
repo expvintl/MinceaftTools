@@ -17,11 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class ChatHudMixin {
     @ModifyReceiver(method = "render",at=@At(value = "INVOKE",target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/OrderedText;III)I"))
     private DrawContext onRenderDrawTextWithShadow(DrawContext context, TextRenderer renderer, OrderedText text, int x, int y, int color, @Local ChatHudLine.Visible line){
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1,1,1,((color >> 24) & 0x000000FF)/255f);
         Utils.DrawHeadIcon(context,line,y);
-        RenderSystem.setShaderColor(1,1,1,1);
-        RenderSystem.disableBlend();
         return context;
     }
 }
