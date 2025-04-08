@@ -14,6 +14,7 @@
   "client": [
     "MinecraftClientMixin",
     "SoundSystemMixin",
+    "client.GameRendererMixin",
     "interfaces.ClientPlayerInteractionManagerAccessor",
     "interfaces.MinecraftClientAccessor",
     "interfaces.SimpleOptionAccessor",

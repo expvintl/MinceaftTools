@@ -19,21 +19,24 @@ import net.minecraft.block.BambooShootBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 
-import java.awt.*;
+import java.util.function.BiConsumer;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class CAutoToolCommand {
     private static final CAutoToolCommand INSTANCE=new CAutoToolCommand();
-    private int lastSlot=-1;
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher){
         MCEventBus.INSTANCE.register(INSTANCE);
         CommandUtils.CreateStatusCommand("cautotool",Globals.autoTool,dispatcher);
@@ -49,17 +52,12 @@ public class CAutoToolCommand {
         }
         return Command.SINGLE_SUCCESS;
     }
+
     @Subscribe
     private void onBreakBlock(PlayerBreakBlockEvent event){
         if(!Globals.autoTool.get()) return;
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
-        //TODO: 因bug禁用
-//        if (lastSlot!=-1){
-//            //破坏方块后切换回去
-//            mc.player.getInventory().setSelectedSlot(lastSlot);
-//            lastSlot=-1;
-//        }
     }
     @Subscribe
     private void onAttackEntity(PlayerAttackEntityEvent event){
@@ -70,8 +68,10 @@ public class CAutoToolCommand {
         float bestScore=-1;
         int slot=-1;
         for(int i=0;i<9;i++) {
-            float score=getWeaponScore(event.player,i);
-            if(score<0) continue;
+            ItemStack item = event.player.getInventory().getStack(i);
+            if(!isSwordItem(item.getItem())&&!isToolItem(item.getItem())) continue;
+            float score=getWeaponScore(item);
+            if(score<=0) continue;
             //选出最好分数的工具
             if(score>bestScore){
                 bestScore=score;
@@ -81,7 +81,7 @@ public class CAutoToolCommand {
         if(slot==-1) return;
         ItemStack currentItem = event.player.getInventory().getStack(slot);
         //低耐久测试
-        if(!lowDurability(currentItem)) {
+        if(!isLowDurability(currentItem)) {
             //切换过去
             event.player.getInventory().setSelectedSlot(slot);
             MinecraftClient mc=MinecraftClient.getInstance();
@@ -90,6 +90,7 @@ public class CAutoToolCommand {
             }
         }
     }
+    //方块挖掘
     @Subscribe
     private void onAttackBlock(PlayerAttackBlockEvent event){
         if(!Globals.autoTool.get()) return;
@@ -117,9 +118,7 @@ public class CAutoToolCommand {
         if(slot==-1) return;
         ItemStack currentItem = mc.player.getInventory().getStack(slot);
         //确定已经选择好了工具就切换
-        if(!lowDurability(currentItem)) {
-            //记住上一次的槽方便恢复
-            lastSlot=mc.player.getInventory().getSelectedSlot();
+        if(!isLowDurability(currentItem)) {
             //切换过去
             mc.player.getInventory().setSelectedSlot(slot);
             if(mc.interactionManager!=null) {
@@ -158,27 +157,43 @@ public class CAutoToolCommand {
         }
         return score;
     }
-    public float getWeaponScore(PlayerEntity player,int slot) {
+    public float getWeaponScore(ItemStack item) {
         float damageScore = 0;
-        ItemStack item = player.getInventory().getStack(slot);
         //剑优先
-        if(isSwordItem(item.getItem())) damageScore+=10;
-        //使用所有工具组
-        if (isToolItem(item.getItem())) {
-            damageScore += item.getDamage();
-            //锋利加分
-            damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
-            //精修
-            damageScore+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
-            //火焰附加
-            damageScore+=Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT,item)*3;
-            //击退
-            damageScore+=Utils.GetEnchantLevel(Enchantments.KNOCKBACK,item)*2;
-        }
+        if (isSwordItem(item.getItem())) damageScore += 100;
+        AttributeModifiersComponent comp=item.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+        final float[] damageHolder = {0.0f};
+        BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> baseDamage=(attentry, modify)->{
+            if(attentry.matches(EntityAttributes.ATTACK_DAMAGE)){
+                //计算基础伤害
+                damageHolder [0]= (float)modify.value();
+            }
+        };
+        comp.applyModifiers(EquipmentSlot.MAINHAND,baseDamage);
+        damageScore+=damageHolder[0];
+        //锋利加分
+        damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
+        //精修
+        damageScore += Utils.GetEnchantLevel(Enchantments.MENDING, item);
+        //火焰附加
+        damageScore += Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT, item) * 3;
+        //击退
+        damageScore += Utils.GetEnchantLevel(Enchantments.KNOCKBACK, item) * 2;
         return damageScore;
     }
     //停用低耐久度
-    private boolean lowDurability(ItemStack itemStack) {
-        return  (itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 10 / 100);
+    private boolean isLowDurability(ItemStack itemStack) {
+        Item item = itemStack.getItem();
+        boolean isWooden = item == Items.WOODEN_SWORD || item == Items.WOODEN_PICKAXE ||
+                item == Items.WOODEN_AXE || item == Items.WOODEN_SHOVEL ||
+                item == Items.WOODEN_HOE;
+        boolean isStone = item == Items.STONE_SWORD || item == Items.STONE_PICKAXE ||
+                item == Items.STONE_AXE || item == Items.STONE_SHOVEL ||
+                item == Items.STONE_HOE;
+        boolean isIron = item == Items.IRON_SWORD || item == Items.IRON_PICKAXE ||
+                item == Items.IRON_AXE || item == Items.IRON_SHOVEL ||
+                item == Items.IRON_HOE;
+        return  !(isWooden||isStone||isIron) //忽略木/石/铁工具
+                &&(itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 10 / 100);
     }
 }

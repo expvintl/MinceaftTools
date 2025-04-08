@@ -2,6 +2,7 @@ package com.expvintl.mctools;
 
 import com.expvintl.mctools.commands.*;
 import com.expvintl.mctools.modules.BetterTooltip;
+import com.expvintl.mctools.modules.CameraZoom;
 import com.expvintl.mctools.modules.PlayerListTextLatency;
 import com.expvintl.mctools.texthud.MCInfo;
 import com.expvintl.mctools.texthud.PotionInfo;
@@ -34,6 +35,7 @@ public class MCToolsClient implements ClientModInitializer {
     public void InitModules(){
         BetterTooltip.INSTANCE.init();
         PlayerListTextLatency.INSTANCE.init();
+        CameraZoom.INSTANCE.init();
     }
 
     private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
