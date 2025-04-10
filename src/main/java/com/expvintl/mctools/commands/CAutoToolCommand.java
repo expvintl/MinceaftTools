@@ -20,14 +20,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.text.Text;
 
 import java.util.function.BiConsumer;
@@ -70,7 +71,7 @@ public class CAutoToolCommand {
         for(int i=0;i<9;i++) {
             ItemStack item = event.player.getInventory().getStack(i);
             if(!isSwordItem(item.getItem())&&!isToolItem(item.getItem())) continue;
-            float score=getWeaponScore(item);
+            float score=getWeaponScore(event.target, item);
             if(score<=0) continue;
             //选出最好分数的工具
             if(score>bestScore){
@@ -157,10 +158,11 @@ public class CAutoToolCommand {
         }
         return score;
     }
-    public float getWeaponScore(ItemStack item) {
+    public float getWeaponScore(Entity ent, ItemStack item) {
         float damageScore = 0;
         //剑优先
         if (isSwordItem(item.getItem())) damageScore += 100;
+        //计算物品的基础伤害属性(较为复杂)
         AttributeModifiersComponent comp=item.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
         final float[] damageHolder = {0.0f};
         BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> baseDamage=(attentry, modify)->{
@@ -171,14 +173,23 @@ public class CAutoToolCommand {
         };
         comp.applyModifiers(EquipmentSlot.MAINHAND,baseDamage);
         damageScore+=damageHolder[0];
+        //节肢杀手
+        EntityType<?> id=ent.getType();
+        if(id==EntityType.SPIDER||id==EntityType.CAVE_SPIDER||id==EntityType.SILVERFISH||id==EntityType.ENDERMITE||id==EntityType.BEE) {
+            damageScore += Utils.GetEnchantLevel(Enchantments.BANE_OF_ARTHROPODS, item) * 3;
+        }
+        //亡灵杀手(这伤害通常更高)
+        if(ent.getType().isIn(EntityTypeTags.UNDEAD)){
+            damageScore+=Utils.GetEnchantLevel(Enchantments.SMITE,item)*3;// 3倍
+        }
         //锋利加分
         damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
         //精修
         damageScore += Utils.GetEnchantLevel(Enchantments.MENDING, item);
         //火焰附加
-        damageScore += Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT, item) * 3;
+        damageScore += Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT, item);
         //击退
-        damageScore += Utils.GetEnchantLevel(Enchantments.KNOCKBACK, item) * 2;
+        damageScore += Utils.GetEnchantLevel(Enchantments.KNOCKBACK, item);
         return damageScore;
     }
     //停用低耐久度
