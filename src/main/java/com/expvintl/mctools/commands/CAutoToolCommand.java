@@ -14,9 +14,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.block.BambooBlock;
-import net.minecraft.block.BambooShootBlock;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -109,7 +107,7 @@ public class CAutoToolCommand {
         for(int i=0;i<9;i++){
             ItemStack item = mc.player.getInventory().getStack(i);
             float score= getToolsScore(item,state);
-            if(score<0) continue;
+            if(score<=0) continue;
             //选出最好分数的工具
             if(score>bestScore){
                 bestScore=score;
@@ -137,11 +135,61 @@ public class CAutoToolCommand {
                 || item == Items.WOODEN_HOE || item == Items.STONE_HOE || item == Items.IRON_HOE || item == Items.GOLDEN_HOE || item == Items.DIAMOND_HOE || item == Items.NETHERITE_HOE
                 || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.GOLDEN_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD;
     }
+    public boolean isOreBlock(Item item) {
+        return item == Items.COAL_ORE ||           // 煤矿石
+                item == Items.DEEPSLATE_COAL_ORE ||   // 深层煤矿石
+                item == Items.IRON_ORE ||           // 铁矿石
+                item == Items.DEEPSLATE_IRON_ORE ||   // 深层铁矿石
+                item == Items.COPPER_ORE ||         // 铜矿石
+                item == Items.DEEPSLATE_COPPER_ORE || // 深层铜矿石
+                item == Items.GOLD_ORE ||           // 金矿石
+                item == Items.DEEPSLATE_GOLD_ORE ||   // 深层金矿石
+                item == Items.REDSTONE_ORE ||       // 红石矿石
+                item == Items.DEEPSLATE_REDSTONE_ORE ||// 深层红石矿石
+                item == Items.EMERALD_ORE ||        // 绿宝石矿石
+                item == Items.DEEPSLATE_EMERALD_ORE ||// 深层绿宝石矿石
+                item == Items.LAPIS_ORE ||          // 青金石矿石
+                item == Items.DEEPSLATE_LAPIS_ORE ||  // 深层青金石矿石
+                item == Items.DIAMOND_ORE ||        // 钻石矿石
+                item == Items.DEEPSLATE_DIAMOND_ORE ||// 深层钻石矿石
+                item == Items.NETHER_GOLD_ORE ||    // 下界金矿石
+                item == Items.NETHER_QUARTZ_ORE;  // 下界石英矿石
+    }
+    private boolean isBlockFortune(Block block) {
+        if (block == Blocks.COAL_ORE || block == Blocks.DEEPSLATE_COAL_ORE ||
+                block == Blocks.COPPER_ORE || block == Blocks.DEEPSLATE_COPPER_ORE ||
+                block == Blocks.IRON_ORE || block == Blocks.DEEPSLATE_IRON_ORE ||
+                block == Blocks.GOLD_ORE || block == Blocks.DEEPSLATE_GOLD_ORE ||
+                block == Blocks.REDSTONE_ORE || block == Blocks.DEEPSLATE_REDSTONE_ORE ||
+                block == Blocks.LAPIS_ORE || block == Blocks.DEEPSLATE_LAPIS_ORE ||
+                block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE ||
+                block == Blocks.EMERALD_ORE || block == Blocks.DEEPSLATE_EMERALD_ORE ||
+                block == Blocks.NETHER_QUARTZ_ORE || block == Blocks.NETHER_GOLD_ORE ||
+                block == Blocks.AMETHYST_CLUSTER) { // 紫水晶簇也受时运影响
+            return true;
+        }
+
+        if (block == Blocks.WHEAT || // 小麦
+                block == Blocks.CARROTS || // 胡萝卜
+                block == Blocks.POTATOES || // 马铃薯
+                block == Blocks.BEETROOTS || // 甜菜根
+                block == Blocks.NETHER_WART) { // 下界疣
+            return true;
+        }
+
+        if (block == Blocks.GLOWSTONE || // 荧石
+                block == Blocks.MELON || // 西瓜
+                block == Blocks.GRAVEL || // 沙砾 (影响燧石掉落概率)
+                block == Blocks.SEA_LANTERN){ // 海晶灯
+            return true;
+        }
+        return false;
+    }
     public float getToolsScore(ItemStack item, BlockState state){
         float score=0;
         if(isToolItem(item.getItem())||item.getItem() instanceof ShearsItem){
             //根据挖掘速度提升评分
-            score+=item.getMiningSpeedMultiplier(state)*30;
+            score+=item.getMiningSpeedMultiplier(state)*2;
             //附魔加分
             //耐久
             score+= Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
@@ -149,10 +197,15 @@ public class CAutoToolCommand {
             score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
             //经验修补
             score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
+
+            if(isBlockFortune(state.getBlock())){
+                score+=Utils.GetEnchantLevel(Enchantments.FORTUNE,item);//时运
+            }
+
             if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
                 if((item.getItem().getComponents().get(DataComponentTypes.TOOL)!=null)){
                     //根据挖掘等级加分
-                    score += 90 + (item.getItem().getComponents().get(DataComponentTypes.TOOL).getSpeed(state) * 10);
+                    score += 90 + (item.getItem().getComponents().get(DataComponentTypes.TOOL).getSpeed(state));
                 }
             }
         }
@@ -171,7 +224,7 @@ public class CAutoToolCommand {
                 damageHolder [0]= (float)modify.value();
             }
         };
-        comp.applyModifiers(EquipmentSlot.MAINHAND,baseDamage);
+        comp.applyModifiers(EquipmentSlot.MAINHAND,baseDamage);//计算主手时的伤害
         damageScore+=damageHolder[0];
         //节肢杀手
         EntityType<?> id=ent.getType();

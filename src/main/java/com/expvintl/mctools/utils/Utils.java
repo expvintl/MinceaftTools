@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
@@ -244,9 +245,7 @@ public class Utils {
         if(sender==null) return;
         PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(sender.getId());
         if (entry == null) return;
-
-        Identifier skin = entry.getSkinTextures().texture();
-        draw.drawTexture(RenderLayer::getGuiTextured, skin,0, y, 8, 8, 8, 8, 8, 8, 64, 64);
+        PlayerSkinDrawer.draw(draw,entry.getSkinTextures(),0,y,8);
         draw.getMatrices().translate(10, 0, 0);
     }
     public static GameProfile getChatSender(String text){

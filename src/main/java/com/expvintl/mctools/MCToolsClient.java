@@ -47,7 +47,6 @@ public class MCToolsClient implements ClientModInitializer {
         CAutoToolCommand.register(dispatcher);
         CQServerPluginsCommand.register(dispatcher);
         CNoFallPacketCommand.register(dispatcher);
-        CFindBlockCommand.register(dispatcher);
         CFastDropCommand.register(dispatcher,registryAccess);
     }
 }
