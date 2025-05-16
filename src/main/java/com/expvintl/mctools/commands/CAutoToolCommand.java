@@ -8,6 +8,7 @@ import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
 import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
 import com.expvintl.mctools.utils.CommandUtils;
 import com.expvintl.mctools.utils.Utils;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -16,8 +17,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -29,6 +29,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.text.Text;
 
+import java.util.Collection;
 import java.util.function.BiConsumer;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
@@ -82,7 +83,7 @@ public class CAutoToolCommand {
         //低耐久测试
         if(!isLowDurability(currentItem)) {
             //切换过去
-            event.player.getInventory().setSelectedSlot(slot);
+            event.player.getInventory().selectedSlot=slot;
             MinecraftClient mc=MinecraftClient.getInstance();
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
@@ -119,7 +120,7 @@ public class CAutoToolCommand {
         //确定已经选择好了工具就切换
         if(!isLowDurability(currentItem)) {
             //切换过去
-            mc.player.getInventory().setSelectedSlot(slot);
+            mc.player.getInventory().selectedSlot=slot;
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
             }
@@ -192,20 +193,20 @@ public class CAutoToolCommand {
             score+=item.getMiningSpeedMultiplier(state)*2;
             //附魔加分
             //耐久
-            score+= Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
+            score+= EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
             //效率
-            score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
+            score+=EnchantmentHelper.getLevel(Enchantments.EFFICIENCY,item);
             //经验修补
-            score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
+            score+=EnchantmentHelper.getLevel(Enchantments.MENDING,item);
 
             if(isBlockFortune(state.getBlock())){
-                score+=Utils.GetEnchantLevel(Enchantments.FORTUNE,item);//时运
+                score+=EnchantmentHelper.getLevel(Enchantments.FORTUNE,item);//时运
             }
 
-            if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
-                if((item.getItem().getComponents().get(DataComponentTypes.TOOL)!=null)){
+            if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock)) {
+                if(item.getItem() instanceof ToolItem tool){
                     //根据挖掘等级加分
-                    score += 90 + (item.getItem().getComponents().get(DataComponentTypes.TOOL).getSpeed(state));
+                    score += 90 + tool.getMaterial().getMiningSpeedMultiplier();
                 }
             }
         }
@@ -216,33 +217,31 @@ public class CAutoToolCommand {
         //剑优先
         if (isSwordItem(item.getItem())) damageScore += 100;
         //计算物品的基础伤害属性(较为复杂)
-        AttributeModifiersComponent comp=item.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-        final float[] damageHolder = {0.0f};
-        BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> baseDamage=(attentry, modify)->{
-            if(attentry.matches(EntityAttributes.ATTACK_DAMAGE)){
-                //计算基础伤害
-                damageHolder [0]= (float)modify.value();
+        Multimap<EntityAttribute, EntityAttributeModifier> modifiers = item.getAttributeModifiers(EquipmentSlot.MAINHAND);
+        Collection<EntityAttributeModifier> damageModifiers = modifiers.get(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        for (EntityAttributeModifier modifier : damageModifiers) {
+            if (modifier.getOperation() == EntityAttributeModifier.Operation.ADDITION) {
+                damageScore+=(float) modifier.getValue();
+                break;
             }
-        };
-        comp.applyModifiers(EquipmentSlot.MAINHAND,baseDamage);//计算主手时的伤害
-        damageScore+=damageHolder[0];
+        }
         //节肢杀手
         EntityType<?> id=ent.getType();
         if(id==EntityType.SPIDER||id==EntityType.CAVE_SPIDER||id==EntityType.SILVERFISH||id==EntityType.ENDERMITE||id==EntityType.BEE) {
-            damageScore += Utils.GetEnchantLevel(Enchantments.BANE_OF_ARTHROPODS, item) * 3;
+            damageScore += EnchantmentHelper.getLevel(Enchantments.BANE_OF_ARTHROPODS, item) * 3;
         }
         //亡灵杀手(这伤害通常更高)
-        if(ent.getType().isIn(EntityTypeTags.UNDEAD)){
-            damageScore+=Utils.GetEnchantLevel(Enchantments.SMITE,item)*3;// 3倍
+        if(((LivingEntity)ent).getGroup()==EntityGroup.UNDEAD){
+            damageScore+=EnchantmentHelper.getLevel(Enchantments.SMITE,item)*3;// 3倍
         }
         //锋利加分
-        damageScore += Utils.GetEnchantLevel(Enchantments.SHARPNESS, item) * 2;
+        damageScore += EnchantmentHelper.getLevel(Enchantments.SHARPNESS, item) * 2;
         //精修
-        damageScore += Utils.GetEnchantLevel(Enchantments.MENDING, item);
+        damageScore += EnchantmentHelper.getLevel(Enchantments.MENDING, item);
         //火焰附加
-        damageScore += Utils.GetEnchantLevel(Enchantments.FIRE_ASPECT, item);
+        damageScore += EnchantmentHelper.getLevel(Enchantments.FIRE_ASPECT, item);
         //击退
-        damageScore += Utils.GetEnchantLevel(Enchantments.KNOCKBACK, item);
+        damageScore += EnchantmentHelper.getLevel(Enchantments.KNOCKBACK, item);
         return damageScore;
     }
     //停用低耐久度
@@ -258,6 +257,6 @@ public class CAutoToolCommand {
                 item == Items.IRON_AXE || item == Items.IRON_SHOVEL ||
                 item == Items.IRON_HOE;
         return  !(isWooden||isStone||isIron) //忽略木/石/铁工具
-                &&(itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 10 / 100);
+                &&(itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 2 / 100);
     }
 }
