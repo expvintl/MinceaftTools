@@ -1,10 +1,9 @@
 package com.expvintl.mctools.commands;
 
-import com.expvintl.mctools.Globals;
+import com.expvintl.mctools.FeaturesSettings;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.player.PlayerAttackBlockEvent;
 import com.expvintl.mctools.events.player.PlayerAttackEntityEvent;
-import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
 import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
 import com.expvintl.mctools.utils.CommandUtils;
 import com.expvintl.mctools.utils.Utils;
@@ -23,11 +22,12 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.text.Text;
+import net.minecraft.world.GameMode;
 
 import java.util.function.BiConsumer;
 
@@ -38,35 +38,44 @@ public class CAutoToolCommand {
     private static final CAutoToolCommand INSTANCE=new CAutoToolCommand();
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher){
         MCEventBus.INSTANCE.register(INSTANCE);
-        CommandUtils.CreateStatusCommand("cautotool",Globals.autoTool,dispatcher);
-        dispatcher.register(literal("cautotool").then(argument("开关", BoolArgumentType.bool()).executes(CAutoToolCommand::execute)));
+        CommandUtils.CreateStatusCommand("cautotool", FeaturesSettings.INSTANCE.autoTool, dispatcher);
+        dispatcher.register(
+                literal("cautotool")
+                        .then(argument("开关", BoolArgumentType.bool())
+                        .executes(CAutoToolCommand::execute)
+                        .then(argument("包含玩家",BoolArgumentType.bool())
+                        .executes(CAutoToolCommand::execute))));
     }
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
-        Globals.autoTool.set(context.getArgument("开关", Boolean.class));
-        if(Globals.autoTool.get()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用智能工具!"),false);
+        FeaturesSettings.INSTANCE.autoTool.setValue(context.getArgument("开关", Boolean.class));
+        try{
+            FeaturesSettings.INSTANCE.autoToolIncludePlayer.setValue(context.getArgument("包含玩家", Boolean.class));
+        }catch (IllegalArgumentException ignored){
+        }
+        if(FeaturesSettings.INSTANCE.autoTool.getValue()){
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用智能工具! 对玩家使用智能武器:"+FeaturesSettings.INSTANCE.autoToolIncludePlayer.getValue()),false);
         }else{
             context.getSource().getPlayer().sendMessage(Text.literal("已禁用智能工具!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }
 
-    @Subscribe
-    private void onBreakBlock(PlayerBreakBlockEvent event){
-        if(!Globals.autoTool.get()) return;
-        MinecraftClient mc=MinecraftClient.getInstance();
-        if (mc.world == null||mc.player==null) return;
-    }
+//    @Subscribe
+//    private void onBreakBlock(PlayerBreakBlockEvent event){
+//        if(!Globals.autoTool.get()) return;
+//        MinecraftClient mc=MinecraftClient.getInstance();
+//        if (mc.world == null||mc.player==null) return;
+//    }
     @Subscribe
     private void onAttackEntity(PlayerAttackEntityEvent event){
-        if(!Globals.autoTool.get()) return;
+        if(!FeaturesSettings.INSTANCE.autoTool.getValue()) return;
         if(event.target.hasCustomName()) return;
-        //不对玩家使用
-        if(event.target.isPlayer()) return;
+        //对玩家使用
+        if(FeaturesSettings.INSTANCE.autoToolIncludePlayer.getValue()&&event.target.isPlayer()) return;
         float bestScore=-1;
         int slot=-1;
-        for(int i=0;i<9;i++) {
+        for(int i=0;i<PlayerInventory.HOTBAR_SIZE;i++) {
             ItemStack item = event.player.getInventory().getStack(i);
             if(!isSwordItem(item.getItem())&&!isToolItem(item.getItem())) continue;
             float score=getWeaponScore(event.target, item);
@@ -92,10 +101,11 @@ public class CAutoToolCommand {
     //方块挖掘
     @Subscribe
     private void onAttackBlock(PlayerAttackBlockEvent event){
-        if(!Globals.autoTool.get()) return;
+        if(!FeaturesSettings.INSTANCE.autoTool.getValue()) return;
         //自动工具
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
+        if(mc.player.getGameMode() != GameMode.SURVIVAL) return; //跳过不符合条件的游戏模式
         BlockState state= mc.world.getBlockState(event.blockPos);
         //跳过不可破坏
         if(state.getHardness(mc.world, event.blockPos) < 0) return;
@@ -104,7 +114,7 @@ public class CAutoToolCommand {
         //工具槽
         int slot=-1;
         //遍历每一个物品槽
-        for(int i=0;i<9;i++){
+        for(int i = 0; i< PlayerInventory.HOTBAR_SIZE; i++){
             ItemStack item = mc.player.getInventory().getStack(i);
             float score= getToolsScore(item,state);
             if(score<=0) continue;
@@ -177,13 +187,11 @@ public class CAutoToolCommand {
             return true;
         }
 
-        if (block == Blocks.GLOWSTONE || // 荧石
+        // 海晶灯
+        return block == Blocks.GLOWSTONE || // 荧石
                 block == Blocks.MELON || // 西瓜
                 block == Blocks.GRAVEL || // 沙砾 (影响燧石掉落概率)
-                block == Blocks.SEA_LANTERN){ // 海晶灯
-            return true;
-        }
-        return false;
+                block == Blocks.SEA_LANTERN;
     }
     public float getToolsScore(ItemStack item, BlockState state){
         float score=0;
@@ -205,7 +213,7 @@ public class CAutoToolCommand {
             if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
                 if((item.getItem().getComponents().get(DataComponentTypes.TOOL)!=null)){
                     //根据挖掘等级加分
-                    score += 90 + (item.getItem().getComponents().get(DataComponentTypes.TOOL).getSpeed(state));
+                    score += 90 + item.getMiningSpeedMultiplier(state);
                 }
             }
         }
