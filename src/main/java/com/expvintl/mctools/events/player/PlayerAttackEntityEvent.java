@@ -2,7 +2,6 @@ package com.expvintl.mctools.events.player;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class PlayerAttackEntityEvent {
     private static final PlayerAttackEntityEvent INSTANCE=new PlayerAttackEntityEvent();

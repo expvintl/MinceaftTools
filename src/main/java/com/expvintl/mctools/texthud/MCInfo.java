@@ -3,12 +3,10 @@ package com.expvintl.mctools.texthud;
 import com.expvintl.mctools.utils.DrawUtils;
 import com.expvintl.mctools.utils.Utils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Colors;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
@@ -47,7 +45,7 @@ public class MCInfo {
     public static void drawHUD(DrawContext drawContext, float v) {
         MinecraftClient mc=MinecraftClient.getInstance();
         //跳过调试
-        if(mc.options.debugEnabled||mc.options.hudHidden) return;
+        if(mc.getDebugHud().shouldShowDebugHud()||mc.options.hudHidden) return;
         if(mc.world!=null&&mc.player!=null) {
             DrawUtils.leftTextY =1;
             int selfPing=0;

@@ -4,7 +4,6 @@ import com.expvintl.mctools.FeaturesSettings;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.player.PlayerAttackBlockEvent;
 import com.expvintl.mctools.events.player.PlayerAttackEntityEvent;
-import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
 import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
 import com.expvintl.mctools.utils.CommandUtils;
 import com.google.common.collect.Multimap;
@@ -14,7 +13,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.block.*;
+import net.minecraft.block.BambooBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -236,7 +238,7 @@ public class CAutoToolCommand {
             damageScore += EnchantmentHelper.getLevel(Enchantments.BANE_OF_ARTHROPODS, item) * 3;
         }
         //亡灵杀手(这伤害通常更高)
-        if(((LivingEntity)ent).getGroup()==EntityGroup.UNDEAD){
+        if(((LivingEntity)ent).getGroup()== EntityGroup.UNDEAD){
             damageScore+=EnchantmentHelper.getLevel(Enchantments.SMITE,item)*3;// 3倍
         }
         //锋利加分
