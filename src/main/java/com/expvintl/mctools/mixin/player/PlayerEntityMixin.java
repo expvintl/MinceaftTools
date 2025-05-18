@@ -1,6 +1,6 @@
 package com.expvintl.mctools.mixin.player;
 
-import com.expvintl.mctools.Globals;
+import com.expvintl.mctools.FeaturesSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ public class PlayerEntityMixin {
         if(MinecraftClient.getInstance().world!=null&&MinecraftClient.getInstance().player!=null) {
             if (!MinecraftClient.getInstance().world.isClient) return;
             //挂住边缘
-            if (Globals.selfWalk.get() && !MinecraftClient.getInstance().player.isSneaking()) cir.setReturnValue(true);
+            if (FeaturesSettings.INSTANCE.safeWalk.getValue() && !MinecraftClient.getInstance().player.isSneaking()) cir.setReturnValue(true);
         }
     }
 }

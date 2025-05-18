@@ -14,9 +14,9 @@ public class PlayerListTextLatency {
     private int calcLatencyColor(int latency){
         if(latency>=0&&latency<=60){ //0-60
             return 0x00FF00; //绿色
-        }else if(latency>60&&latency<=120){ //60-120
+        }else if(latency>60&&latency<=100){ //60-100
             return 0xFFFF00; //黄色
-        }else if(latency>120&&latency<=200){//120-200
+        }else if(latency>100&&latency<=200){//100-200
             return 0xFFA500; //橙色
         }else if(latency>200){ //>200
             return 0xFF0000; //红色

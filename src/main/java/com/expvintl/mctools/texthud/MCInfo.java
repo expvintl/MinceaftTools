@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Objects;
+
 public class MCInfo {
     private static String gameDayToRealTimeFormat(long gameDays) {
         // 游戏 1 小时等于 20 分钟
@@ -42,10 +44,10 @@ public class MCInfo {
 
         return timeString.toString();
     }
-    public static void drawHUD(DrawContext drawContext,float v) {
+    public static void drawHUD(DrawContext drawContext, float v) {
         MinecraftClient mc=MinecraftClient.getInstance();
         //跳过调试
-        if(mc.getDebugHud().shouldShowDebugHud()||mc.options.hudHidden) return;
+        if(mc.options.debugEnabled||mc.options.hudHidden) return;
         if(mc.world!=null&&mc.player!=null) {
             DrawUtils.leftTextY =1;
             int selfPing=0;
@@ -67,10 +69,10 @@ public class MCInfo {
                 DrawUtils.AddLeftText(drawContext,String.format("X:%.2f Y:%.2f Z:%.2f",playerPos.x,playerPos.y,playerPos.z));
             }
             DrawUtils.AddLeftText(drawContext,String.format("世界时间: %d天 (%s)",mc.world.getTimeOfDay()/24000,gameDayToRealTimeFormat(mc.world.getTimeOfDay()/24000)));
-            DrawUtils.AddLeftText(drawContext,String.format("当前区块: [%d,%d],方块:[%d,%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z,mc.player.getBlockX()&0xF,mc.player.getBlockY()&0xF,mc.player.getBlockZ()&0xF));
+            DrawUtils.AddLeftText(drawContext,String.format("当前区块: %d,%d 方块:[%d,%d]",mc.player.getChunkPos().x,mc.player.getChunkPos().z,mc.player.getBlockX()&0xf,mc.player.getBlockZ()&0xf));
             DrawUtils.AddLeftText(drawContext,String.format("本地难度:%.2f",mc.world.getLocalDifficulty(mc.player.getBlockPos()).getLocalDifficulty()));
-            ItemStack currentItem=p.getInventory().getMainHandStack();
-            if(currentItem!=null&&currentItem.isDamageable()){
+            ItemStack currentItem=p.getMainHandStack();
+            if(Objects.nonNull(currentItem)&&currentItem.isDamageable()){
                 DrawUtils.AddLeftText(drawContext,String.format("耐久度:%d/%d",currentItem.getMaxDamage()-currentItem.getDamage(),currentItem.getMaxDamage()));
             }
         }
