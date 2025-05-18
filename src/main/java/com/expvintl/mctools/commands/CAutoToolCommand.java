@@ -15,6 +15,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.Enchantments;
@@ -75,7 +76,7 @@ public class CAutoToolCommand {
         if(FeaturesSettings.INSTANCE.autoToolIncludePlayer.getValue()&&event.target.isPlayer()) return;
         float bestScore=-1;
         int slot=-1;
-        for(int i=0;i<PlayerInventory.HOTBAR_SIZE;i++) {
+        for(int i=0;i<PlayerInventory.getHotbarSize();i++) {
             ItemStack item = event.player.getInventory().getStack(i);
             if(!isSwordItem(item.getItem())&&!isToolItem(item.getItem())) continue;
             float score=getWeaponScore(event.target, item);
@@ -91,7 +92,7 @@ public class CAutoToolCommand {
         //低耐久测试
         if(!isLowDurability(currentItem)) {
             //切换过去
-            event.player.getInventory().setSelectedSlot(slot);
+            event.player.getInventory().selectedSlot=slot;
             MinecraftClient mc=MinecraftClient.getInstance();
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
@@ -105,7 +106,9 @@ public class CAutoToolCommand {
         //自动工具
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
-        if(mc.player.getGameMode() != GameMode.SURVIVAL) return; //跳过不符合条件的游戏模式
+        PlayerListEntry entry=mc.getNetworkHandler().getPlayerListEntry(mc.player.getUuid());
+        if(entry==null) return;
+        if(entry.getGameMode() != GameMode.SURVIVAL) return; //跳过不符合条件的游戏模式
         BlockState state= mc.world.getBlockState(event.blockPos);
         //跳过不可破坏
         if(state.getHardness(mc.world, event.blockPos) < 0) return;
@@ -114,7 +117,7 @@ public class CAutoToolCommand {
         //工具槽
         int slot=-1;
         //遍历每一个物品槽
-        for(int i = 0; i< PlayerInventory.HOTBAR_SIZE; i++){
+        for(int i = 0; i< PlayerInventory.getHotbarSize(); i++){
             ItemStack item = mc.player.getInventory().getStack(i);
             float score= getToolsScore(item,state);
             if(score<=0) continue;
@@ -129,7 +132,7 @@ public class CAutoToolCommand {
         //确定已经选择好了工具就切换
         if(!isLowDurability(currentItem)) {
             //切换过去
-            mc.player.getInventory().setSelectedSlot(slot);
+            mc.player.getInventory().selectedSlot=slot;
             if(mc.interactionManager!=null) {
                 ((ClientPlayerInteractionManagerAccessor) mc.interactionManager).syncSelectedSlot();
             }
@@ -227,7 +230,7 @@ public class CAutoToolCommand {
         AttributeModifiersComponent comp=item.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
         final float[] damageHolder = {0.0f};
         BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> baseDamage=(attentry, modify)->{
-            if(attentry.matches(EntityAttributes.ATTACK_DAMAGE)){
+            if(attentry.matches(EntityAttributes.GENERIC_ATTACK_DAMAGE)){
                 //计算基础伤害
                 damageHolder [0]= (float)modify.value();
             }
