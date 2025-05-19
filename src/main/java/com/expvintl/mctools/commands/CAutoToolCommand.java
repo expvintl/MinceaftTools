@@ -15,6 +15,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.enchantment.Enchantments;
@@ -105,7 +106,9 @@ public class CAutoToolCommand {
         //自动工具
         MinecraftClient mc=MinecraftClient.getInstance();
         if (mc.world == null||mc.player==null) return;
-        if(mc.player.getGameMode() != GameMode.SURVIVAL) return; //跳过不符合条件的游戏模式
+        PlayerListEntry entry=mc.getNetworkHandler().getPlayerListEntry(mc.player.getUuid());
+        if(entry==null) return;
+        if(entry.getGameMode() != GameMode.SURVIVAL) return; //跳过不符合条件的游戏模式
         BlockState state= mc.world.getBlockState(event.blockPos);
         //跳过不可破坏
         if(state.getHardness(mc.world, event.blockPos) < 0) return;
