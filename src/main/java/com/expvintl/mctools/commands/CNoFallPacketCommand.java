@@ -31,9 +31,9 @@ public class CNoFallPacketCommand {
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         FeaturesSettings.INSTANCE.noFallPacket.setValue(context.getArgument("开关", Boolean.class));
         if(FeaturesSettings.INSTANCE.noFallPacket.getValue()){
-            context.getSource().getPlayer().sendMessage(Text.literal("已启用摔落伤害!"),false);
+            context.getSource().getPlayer().sendMessage(Text.literal("已启用无摔落伤害!"),false);
         }else{
-            context.getSource().getPlayer().sendMessage(Text.literal("已禁用摔落伤害!"),false);
+            context.getSource().getPlayer().sendMessage(Text.literal("已禁用无摔落伤害!"),false);
         }
         return Command.SINGLE_SUCCESS;
     }

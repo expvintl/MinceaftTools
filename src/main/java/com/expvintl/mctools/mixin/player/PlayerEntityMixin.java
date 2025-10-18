@@ -13,7 +13,7 @@ public class PlayerEntityMixin {
     @Inject(method = "clipAtLedge",at = @At("HEAD"), cancellable = true)
     private void onLedge(CallbackInfoReturnable<Boolean> cir){
         if(MinecraftClient.getInstance().world!=null&&MinecraftClient.getInstance().player!=null) {
-            if (!MinecraftClient.getInstance().world.isClient) return;
+            if (!MinecraftClient.getInstance().world.isClient()) return;
             //挂住边缘
             if (FeaturesSettings.INSTANCE.safeWalk.getValue() && !MinecraftClient.getInstance().player.isSneaking()) cir.setReturnValue(true);
         }

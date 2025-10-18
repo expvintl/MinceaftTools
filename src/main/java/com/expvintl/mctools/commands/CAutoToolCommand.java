@@ -136,14 +136,15 @@ public class CAutoToolCommand {
         }
     }
     public boolean isSwordItem(Item item){
-        return item==Items.STONE_SWORD||item==Items.DIAMOND_SWORD||item==Items.GOLDEN_SWORD||item==Items.IRON_SWORD||item==Items.NETHERITE_SWORD||item==Items.WOODEN_SWORD;
+        return item==Items.STONE_SWORD||item==Items.DIAMOND_SWORD||item==Items.GOLDEN_SWORD||item==Items.IRON_SWORD||item==Items.NETHERITE_SWORD||item==Items.WOODEN_SWORD||item==Items.COPPER_SWORD;
     }
     public boolean isToolItem(Item item){
         return item == Items.WOODEN_PICKAXE || item == Items.STONE_PICKAXE || item == Items.IRON_PICKAXE || item == Items.GOLDEN_PICKAXE || item == Items.DIAMOND_PICKAXE || item == Items.NETHERITE_PICKAXE
                 || item == Items.WOODEN_AXE || item == Items.STONE_AXE || item == Items.IRON_AXE || item == Items.GOLDEN_AXE || item == Items.DIAMOND_AXE || item == Items.NETHERITE_AXE
                 || item == Items.WOODEN_SHOVEL || item == Items.STONE_SHOVEL || item == Items.IRON_SHOVEL || item == Items.GOLDEN_SHOVEL || item == Items.DIAMOND_SHOVEL || item == Items.NETHERITE_SHOVEL
                 || item == Items.WOODEN_HOE || item == Items.STONE_HOE || item == Items.IRON_HOE || item == Items.GOLDEN_HOE || item == Items.DIAMOND_HOE || item == Items.NETHERITE_HOE
-                || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.GOLDEN_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD;
+                || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.GOLDEN_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
+                || item == Items.COPPER_SWORD || item == Items.COPPER_AXE || item == Items.COPPER_HOE ||item == Items.COPPER_SHOVEL ||item == Items.COPPER_PICKAXE;
     }
     public boolean isOreBlock(Item item) {
         return item == Items.COAL_ORE ||           // 煤矿石
@@ -253,19 +254,12 @@ public class CAutoToolCommand {
         damageScore += Utils.GetEnchantLevel(Enchantments.KNOCKBACK, item);
         return damageScore;
     }
+    private boolean hasEnchants(ItemStack item){
+        return !item.getEnchantments().getEnchantmentEntries().isEmpty();
+    }
     //停用低耐久度
     private boolean isLowDurability(ItemStack itemStack) {
-        Item item = itemStack.getItem();
-        boolean isWooden = item == Items.WOODEN_SWORD || item == Items.WOODEN_PICKAXE ||
-                item == Items.WOODEN_AXE || item == Items.WOODEN_SHOVEL ||
-                item == Items.WOODEN_HOE;
-        boolean isStone = item == Items.STONE_SWORD || item == Items.STONE_PICKAXE ||
-                item == Items.STONE_AXE || item == Items.STONE_SHOVEL ||
-                item == Items.STONE_HOE;
-        boolean isIron = item == Items.IRON_SWORD || item == Items.IRON_PICKAXE ||
-                item == Items.IRON_AXE || item == Items.IRON_SHOVEL ||
-                item == Items.IRON_HOE;
-        return  !(isWooden||isStone||isIron) //忽略木/石/铁工具
-                &&(itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 10 / 100);
+        return  !hasEnchants(itemStack) //忽略没有附魔的
+                &&(itemStack.getMaxDamage() - itemStack.getDamage()) <= (itemStack.getMaxDamage() * 10 / 100);
     }
 }

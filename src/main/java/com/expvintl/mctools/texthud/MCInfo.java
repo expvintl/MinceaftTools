@@ -52,10 +52,10 @@ public class MCInfo {
             DrawUtils.leftTextY =1;
             int selfPing=0;
             ClientPlayerEntity p=mc.player;
-            if(mc.getNetworkHandler()!=null&&mc.getNetworkHandler().getPlayerListEntry(mc.player.getGameProfile().getId())!=null) {
-                selfPing=mc.getNetworkHandler().getPlayerListEntry(mc.player.getGameProfile().getId()).getLatency();
+            if(mc.getNetworkHandler()!=null&&mc.getNetworkHandler().getPlayerListEntry(mc.player.getGameProfile().id())!=null) {
+                selfPing=mc.getNetworkHandler().getPlayerListEntry(mc.player.getGameProfile().id()).getLatency();
             }
-            Vec3d playerPos=p.getPos();
+            Vec3d playerPos=p.getEntityPos();
             DrawUtils.AddLeftText(drawContext,String.format("%d FPS",mc.getCurrentFps()));
             DrawUtils.AddLeftText(drawContext,String.format("Ping: %d 毫秒",selfPing));
             DrawUtils.AddLeftText(drawContext,String.format("亮度:%d",mc.world.getLightLevel(p.getBlockPos())));

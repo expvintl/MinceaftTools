@@ -2,9 +2,7 @@ package com.expvintl.mctools.utils;
 
 import com.expvintl.mctools.mixin.interfaces.MinecraftClientAccessor;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -12,28 +10,20 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
 
-import java.awt.*;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
-import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -243,10 +233,9 @@ public class Utils {
         String txt=buf.toString();
         GameProfile sender=getChatSender(txt);
         if(sender==null) return;
-        PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(sender.getId());
+        PlayerListEntry entry = mc.getNetworkHandler().getPlayerListEntry(sender.id());
         if (entry == null) return;
         PlayerSkinDrawer.draw(draw,entry.getSkinTextures(),0,y,8);
-        draw.getMatrices().translate(10, 0, 0);
     }
     public static GameProfile getChatSender(String text){
         Matcher usernameMatcher=usernameRegex.matcher(text);
