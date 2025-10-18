@@ -255,11 +255,11 @@ public class CAutoToolCommand {
         return damageScore;
     }
     private boolean hasEnchants(ItemStack item){
-        return !item.getEnchantments().getEnchantmentEntries().isEmpty();
+        return !item.getEnchantments().isEmpty();
     }
     //停用低耐久度
     private boolean isLowDurability(ItemStack itemStack) {
-        return  !hasEnchants(itemStack) //忽略没有附魔的
+        return  hasEnchants(itemStack) //忽略没有附魔的
                 &&(itemStack.getMaxDamage() - itemStack.getDamage()) <= (itemStack.getMaxDamage() * 10 / 100);
     }
 }
