@@ -26,6 +26,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
@@ -77,7 +78,7 @@ public class CAutoToolCommand {
         int slot=-1;
         for(int i=0;i<PlayerInventory.HOTBAR_SIZE;i++) {
             ItemStack item = event.player.getInventory().getStack(i);
-            if(!isSwordItem(item.getItem())&&!isToolItem(item.getItem())) continue;
+            if(!isSwordItem(item)&&!isToolItem(item.getItem())) continue;
             float score=getWeaponScore(event.target, item);
             if(score<=0) continue;
             //选出最好分数的工具
@@ -116,6 +117,11 @@ public class CAutoToolCommand {
         //遍历每一个物品槽
         for(int i = 0; i< PlayerInventory.HOTBAR_SIZE; i++){
             ItemStack item = mc.player.getInventory().getStack(i);
+            if (!isToolItem(item.getItem()) && !(item.getItem() instanceof ShearsItem)) {
+                continue;
+            }
+            //如果不可挖掘则跳过
+            if (!item.getItem().canMine(item,state, mc.world, event.blockPos,mc.player)||!item.isSuitableFor(state)) continue;
             float score= getToolsScore(item,state);
             if(score<=0) continue;
             //选出最好分数的工具
@@ -135,8 +141,8 @@ public class CAutoToolCommand {
             }
         }
     }
-    public boolean isSwordItem(Item item){
-        return item.getComponents().contains(DataComponentTypes.WEAPON);
+    public boolean isSwordItem(ItemStack item){
+        return item.isIn(ItemTags.SWORDS);
     }
     public boolean isToolItem(Item item){
         return item.getComponents().contains(DataComponentTypes.TOOL);
@@ -169,28 +175,26 @@ public class CAutoToolCommand {
                 block == Blocks.GRAVEL || // 沙砾 (影响燧石掉落概率)
                 block == Blocks.SEA_LANTERN;
     }
-    public float getToolsScore(ItemStack item, BlockState state){
-        float score=0;
-        if(isToolItem(item.getItem())||item.getItem() instanceof ShearsItem){
-            //根据挖掘速度提升评分
-            score+=item.getMiningSpeedMultiplier(state)*2;
-            //附魔加分
-            //耐久
-            score+= Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
-            //效率
-            score+=Utils.GetEnchantLevel(Enchantments.EFFICIENCY,item);
-            //经验修补
-            score+=Utils.GetEnchantLevel(Enchantments.MENDING,item);
+    public float getToolsScore(ItemStack item, BlockState state) {
+        float score = 0;
+        //根据挖掘速度提升评分
+        score += item.getMiningSpeedMultiplier(state) * 2;
+        //附魔加分
+        //耐久
+        score += Utils.GetEnchantLevel(Enchantments.UNBREAKING, item);
+        //效率
+        score += Utils.GetEnchantLevel(Enchantments.EFFICIENCY, item);
+        //经验修补
+        score += Utils.GetEnchantLevel(Enchantments.MENDING, item);
 
-            if(isBlockFortune(state.getBlock())){
-                score+=Utils.GetEnchantLevel(Enchantments.FORTUNE,item);//时运
-            }
+        if (isBlockFortune(state.getBlock())) {
+            score += Utils.GetEnchantLevel(Enchantments.FORTUNE, item);//时运
+        }
 
-            if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock|| state.getBlock() instanceof BambooShootBlock)) {
-                if((item.getItem().getComponents().get(DataComponentTypes.TOOL)!=null)){
-                    //根据挖掘等级加分
-                    score += 90 + item.getMiningSpeedMultiplier(state);
-                }
+        if (isSwordItem(item) && (state.getBlock() instanceof BambooBlock || state.getBlock() instanceof BambooShootBlock)) {
+            if ((item.getItem().getComponents().get(DataComponentTypes.TOOL) != null)) {
+                //根据挖掘等级加分
+                score += 90 + item.getMiningSpeedMultiplier(state);
             }
         }
         return score;
@@ -198,7 +202,7 @@ public class CAutoToolCommand {
     public float getWeaponScore(Entity ent, ItemStack item) {
         float damageScore = 0;
         //剑优先
-        if (isSwordItem(item.getItem())) damageScore += 100;
+        if (isSwordItem(item)) damageScore += 100;
         //计算物品的基础伤害属性(较为复杂)
         AttributeModifiersComponent comp=item.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
         final float[] damageHolder = {0.0f};

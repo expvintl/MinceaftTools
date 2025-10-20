@@ -11,5 +11,5 @@ public class FeaturesSettings {
     public final BooleanSetting autoToolIncludePlayer = new BooleanSetting();
     public final BooleanSetting autoFish = new BooleanSetting();
     public final BooleanSetting noFallPacket = new BooleanSetting();
-
+    public final BooleanSetting noDarkness=new BooleanSetting();
 }
