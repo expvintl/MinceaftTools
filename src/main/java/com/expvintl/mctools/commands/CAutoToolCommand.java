@@ -4,7 +4,6 @@ import com.expvintl.mctools.FeaturesSettings;
 import com.expvintl.mctools.events.MCEventBus;
 import com.expvintl.mctools.events.player.PlayerAttackBlockEvent;
 import com.expvintl.mctools.events.player.PlayerAttackEntityEvent;
-import com.expvintl.mctools.events.player.PlayerBreakBlockEvent;
 import com.expvintl.mctools.mixin.interfaces.ClientPlayerInteractionManagerAccessor;
 import com.expvintl.mctools.utils.CommandUtils;
 import com.google.common.collect.Multimap;
@@ -112,6 +111,11 @@ public class CAutoToolCommand {
         //遍历每一个物品槽
         for(int i=0;i<9;i++){
             ItemStack item = mc.player.getInventory().getStack(i);
+            if (!isToolItem(item.getItem()) && !(item.getItem() instanceof ShearsItem)) {
+                continue;
+            }
+            //如果不可挖掘则跳过
+            if (!item.getItem().canMine(state, mc.world, event.blockPos, mc.player)||!item.isSuitableFor(state)) continue;
             float score= getToolsScore(item,state);
             if(score<=0) continue;
             //选出最好分数的工具
@@ -132,34 +136,10 @@ public class CAutoToolCommand {
         }
     }
     public boolean isSwordItem(Item item){
-        return item==Items.STONE_SWORD||item==Items.DIAMOND_SWORD||item==Items.GOLDEN_SWORD||item==Items.IRON_SWORD||item==Items.NETHERITE_SWORD||item==Items.WOODEN_SWORD;
+        return item instanceof SwordItem;
     }
     public boolean isToolItem(Item item){
-        return item == Items.WOODEN_PICKAXE || item == Items.STONE_PICKAXE || item == Items.IRON_PICKAXE || item == Items.GOLDEN_PICKAXE || item == Items.DIAMOND_PICKAXE || item == Items.NETHERITE_PICKAXE
-                || item == Items.WOODEN_AXE || item == Items.STONE_AXE || item == Items.IRON_AXE || item == Items.GOLDEN_AXE || item == Items.DIAMOND_AXE || item == Items.NETHERITE_AXE
-                || item == Items.WOODEN_SHOVEL || item == Items.STONE_SHOVEL || item == Items.IRON_SHOVEL || item == Items.GOLDEN_SHOVEL || item == Items.DIAMOND_SHOVEL || item == Items.NETHERITE_SHOVEL
-                || item == Items.WOODEN_HOE || item == Items.STONE_HOE || item == Items.IRON_HOE || item == Items.GOLDEN_HOE || item == Items.DIAMOND_HOE || item == Items.NETHERITE_HOE
-                || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD || item == Items.IRON_SWORD || item == Items.GOLDEN_SWORD || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD;
-    }
-    public boolean isOreBlock(Item item) {
-        return item == Items.COAL_ORE ||           // 煤矿石
-                item == Items.DEEPSLATE_COAL_ORE ||   // 深层煤矿石
-                item == Items.IRON_ORE ||           // 铁矿石
-                item == Items.DEEPSLATE_IRON_ORE ||   // 深层铁矿石
-                item == Items.COPPER_ORE ||         // 铜矿石
-                item == Items.DEEPSLATE_COPPER_ORE || // 深层铜矿石
-                item == Items.GOLD_ORE ||           // 金矿石
-                item == Items.DEEPSLATE_GOLD_ORE ||   // 深层金矿石
-                item == Items.REDSTONE_ORE ||       // 红石矿石
-                item == Items.DEEPSLATE_REDSTONE_ORE ||// 深层红石矿石
-                item == Items.EMERALD_ORE ||        // 绿宝石矿石
-                item == Items.DEEPSLATE_EMERALD_ORE ||// 深层绿宝石矿石
-                item == Items.LAPIS_ORE ||          // 青金石矿石
-                item == Items.DEEPSLATE_LAPIS_ORE ||  // 深层青金石矿石
-                item == Items.DIAMOND_ORE ||        // 钻石矿石
-                item == Items.DEEPSLATE_DIAMOND_ORE ||// 深层钻石矿石
-                item == Items.NETHER_GOLD_ORE ||    // 下界金矿石
-                item == Items.NETHER_QUARTZ_ORE;  // 下界石英矿石
+        return item instanceof ToolItem;
     }
     private boolean isBlockFortune(Block block) {
         if (block == Blocks.COAL_ORE || block == Blocks.DEEPSLATE_COAL_ORE ||
@@ -183,36 +163,32 @@ public class CAutoToolCommand {
             return true;
         }
 
-        if (block == Blocks.GLOWSTONE || // 荧石
+        // 海晶灯
+        return block == Blocks.GLOWSTONE || // 荧石
                 block == Blocks.MELON || // 西瓜
                 block == Blocks.GRAVEL || // 沙砾 (影响燧石掉落概率)
-                block == Blocks.SEA_LANTERN){ // 海晶灯
-            return true;
-        }
-        return false;
+                block == Blocks.SEA_LANTERN;
     }
-    public float getToolsScore(ItemStack item, BlockState state){
-        float score=0;
-        if(isToolItem(item.getItem())||item.getItem() instanceof ShearsItem){
-            //根据挖掘速度提升评分
-            score+=item.getMiningSpeedMultiplier(state)*2;
-            //附魔加分
-            //耐久
-            score+= EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
-            //效率
-            score+=EnchantmentHelper.getLevel(Enchantments.EFFICIENCY,item);
-            //经验修补
-            score+=EnchantmentHelper.getLevel(Enchantments.MENDING,item);
+    public float getToolsScore(ItemStack item, BlockState state) {
+        float score = 0;
+        //根据挖掘速度提升评分
+        score += item.getMiningSpeedMultiplier(state) * 2;
+        //附魔加分
+        //耐久
+        score += EnchantmentHelper.getLevel(Enchantments.UNBREAKING, item);
+        //效率
+        score += EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, item);
+        //经验修补
+        score += EnchantmentHelper.getLevel(Enchantments.MENDING, item);
 
-            if(isBlockFortune(state.getBlock())){
-                score+=EnchantmentHelper.getLevel(Enchantments.FORTUNE,item);//时运
-            }
+        if (isBlockFortune(state.getBlock())) {
+            score += EnchantmentHelper.getLevel(Enchantments.FORTUNE, item);//时运
+        }
 
-            if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock)) {
-                if(item.getItem() instanceof ToolItem tool){
-                    //根据挖掘等级加分
-                    score += 90 + tool.getMaterial().getMiningSpeedMultiplier();
-                }
+        if (isSwordItem(item.getItem()) && (state.getBlock() instanceof BambooBlock)) {
+            if (item.getItem() instanceof ToolItem tool) {
+                //根据挖掘等级加分
+                score += 90 + tool.getMaterial().getMiningSpeedMultiplier();
             }
         }
         return score;
@@ -249,19 +225,12 @@ public class CAutoToolCommand {
         damageScore += EnchantmentHelper.getLevel(Enchantments.KNOCKBACK, item);
         return damageScore;
     }
+    private boolean hasEnchants(ItemStack item){
+        return !item.getEnchantments().isEmpty();
+    }
     //停用低耐久度
     private boolean isLowDurability(ItemStack itemStack) {
-        Item item = itemStack.getItem();
-        boolean isWooden = item == Items.WOODEN_SWORD || item == Items.WOODEN_PICKAXE ||
-                item == Items.WOODEN_AXE || item == Items.WOODEN_SHOVEL ||
-                item == Items.WOODEN_HOE;
-        boolean isStone = item == Items.STONE_SWORD || item == Items.STONE_PICKAXE ||
-                item == Items.STONE_AXE || item == Items.STONE_SHOVEL ||
-                item == Items.STONE_HOE;
-        boolean isIron = item == Items.IRON_SWORD || item == Items.IRON_PICKAXE ||
-                item == Items.IRON_AXE || item == Items.IRON_SHOVEL ||
-                item == Items.IRON_HOE;
-        return  !(isWooden||isStone||isIron) //忽略木/石/铁工具
-                &&(itemStack.getMaxDamage() - itemStack.getDamage()) < (itemStack.getMaxDamage() * 2 / 100);
+        return  hasEnchants(itemStack) //忽略没有附魔的
+                &&(itemStack.getMaxDamage() - itemStack.getDamage()) <= (itemStack.getMaxDamage() * 10 / 100);
     }
 }
